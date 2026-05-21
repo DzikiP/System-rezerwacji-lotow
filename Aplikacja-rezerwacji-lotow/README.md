@@ -1,59 +1,216 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SYSTEM ZARZĄDZANIA REZERWACJĄ LOTÓW
+## 1. CEL PROJEKTU
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Celem projektu jest stworzenie internetowego systemu rezerwacji biletów lotniczych w technologii Laravel, umożliwiającego użytkownikom wyszukiwanie lotów, rezerwację miejsc oraz realizację płatności online.
 
-## About Laravel
+System zostanie zrealizowany jako monolityczna aplikacja webowa (Blade + Laravel API), co umożliwia szybkie wdrożenie i uproszczony deployment (np. Render / Railway / VPS).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Projekt ma na celu:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+automatyzację procesu rezerwacji lotów,
+uproszczenie zakupu biletów,
+zapewnienie podstawowego panelu użytkownika i administratora,
+integrację z zewnętrznym API lotów i jedną bramką płatności. 
+## 2. OPIS SYSTEMU – WYMAGANIA FUNKCJONALNE
+   ### 2.1 Rejestracja i logowanie 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+System wykorzystuje wbudowany mechanizm autoryzacji Laravel:
 
-## Learning Laravel
+rejestracja użytkownika (email + hasło),
+logowanie / wylogowanie,
+hasła szyfrowane (bcrypt),
+weryfikacja email (Laravel notifications),
+role użytkowników (Spatie Permission):
+user
+admin
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 2.2 Wyszukiwanie lotów (Flight Search API)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+System umożliwia wyszukiwanie lotów poprzez:
 
-## Laravel Sponsors
+integrację z zewnętrznym API (np. Amadeus / Aviationstack / mock API),
+filtrowanie:
+lotnisko wylotu (IATA)
+lotnisko przylotu
+data wylotu
+liczba pasażerów
+cache wyników (Redis / Laravel Cache)
+#### 2.3 Implementacja:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Laravel Service FlightService
+HTTP Client (Http::get())
 
-### Premium Partners
+### 2.4 Szczegóły lotu
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Po wybraniu lotu użytkownik widzi:
 
-## Contributing
+przewoźnika
+czas lotu
+trasę
+cenę
+warunki (bagaż, refundacja – jeśli API zwraca)
+przycisk „Rezerwuj”
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2.5 Rezerwacja
 
-## Code of Conduct
+Proces rezerwacji:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+formularz pasażera:
+imię, nazwisko
+data urodzenia
+dokument
+dane kontaktowe
+zapis do tabel:
+bookings
+passengers
 
-## Security Vulnerabilities
+Walidacja:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+max 6 pasażerów
+1 niemowlę / dorosły
 
-## License
+Status:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+pending
+awaiting_payment
+paid
+cancelled
+### 2.6 Płatności 
+
+Integracja z jedną bramką:
+
+Stripe Checkout 
+lub
+Przelewy24 
+
+Flow:
+
+użytkownik tworzy rezerwację
+system generuje payment session
+webhook aktualizuje status
+
+Laravel:
+
+PaymentController
+Stripe Webhook Controller
+
+### 2.7 Potwierdzenie rezerwacji
+
+Po płatności:
+
+generowanie PDF biletu (dompdf / laravel-pdf)
+wysyłka email (Laravel Mail)
+dostęp w panelu użytkownika
+
+### 2.8 Panel użytkownika
+
+Użytkownik może:
+
+przeglądać rezerwacje
+pobierać bilety PDF
+anulować rezerwację (jeśli allowed)
+edytować dane konta
+
+### 2.9 Zakres MVP (OGROMNE CIĘCIE FUNKCJI)
+
+W wersji Laravel MVP NIE IMPLEMENTUJEMY:
+
+2FA
+dynamic seat map (tylko wybór „A1–C10” statyczny)
+multi API provider
+SMS (opcjonalnie później)
+real-time flight tracking
+mikroserwisy
+React frontend
+
+UI = Blade + Tailwind
+
+### 2.9 Integracje
+
+Flight API (1 provider)
+Email (SMTP / Mailtrap)
+Payment (Stripe / P24)
+
+## 3. OPIS SYSTEMU – WYMAGANIA NIEFUNKCJONALNE (Laravel)
+   ### 3.1 Architektura
+   Laravel monolith
+   Blade + Tailwind CSS
+   MySQL / PostgreSQL
+   Redis cache (opcjonalnie)
+   ### 3.2 API
+
+REST API (dla przyszłości):
+
+/api/flights/search
+/api/bookings
+/api/payments/webhook
+
+### 3.3 Wydajność
+cache wyników lotów
+pagination zamiast infinite scroll
+queue (Laravel Queue) dla:
+emaili
+PDF generacji
+
+### 3.4 Bezpieczeństwo
+
+Laravel built-in:
+
+CSRF protection
+hashed passwords
+middleware auth
+rate limiting
+validation rules
+
+### 3.5 Niezawodność
+queue retry system
+logi Laravel (Monolog)
+backup DB (cron)
+
+### 3.6 Deployment (kluczowe)
+
+Najprościej:
+
+Render / Railway / VPS
+PHP 8.3+
+Composer install
+ENV config
+storage link
+queue worker
+cron scheduler
+
+## 4. OGRANICZENIA
+   Technologiczne
+   tylko Laravel monolith
+   tylko 1 API lotów
+   tylko 1 payment provider
+   brak mikroserwisów
+   Czasowe
+   2–3 tygodnie
+   Budżetowe
+   darmowe API (mock / sandbox)
+   Stripe test mode
+
+## 5. UŻYTKOWNICY
+   User (pasażer)
+   Admin
+   pracownicy linii lotniczych
+
+## 6. KLUCZOWE MODELE (Laravel)
+
+Minimalny schemat:
+
+users
+flights (cache / external)
+bookings
+passengers
+payments
+
+## 7. NAJWAŻNIEJSZE PRZYPADKI UŻYCIA
+* rejestracja / logowanie
+* wyszukiwanie lotów
+* wybór lotu
+* rezerwacja
+* płatność
+* generowanie biletu PDF
+* panel użytkownika
