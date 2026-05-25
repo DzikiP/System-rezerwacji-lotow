@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Passenger;
 use App\Models\Booking;
+use App\Models\Passenger;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PassengerFactory extends Factory

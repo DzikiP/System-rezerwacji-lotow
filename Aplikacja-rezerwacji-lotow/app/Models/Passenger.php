@@ -12,12 +12,16 @@ class Passenger extends Model
         'booking_id',
         'first_name',
         'last_name',
-        'passport_number',
-        'birth_date'
+        'nationality',
+        'document_number',
+        'birth_date',
+        'passenger_type',
     ];
+
 
     public function booking()
     {
         return $this->belongsTo(Booking::class);
     }
+
 }

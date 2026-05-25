@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BookingStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,9 +12,20 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'flight_id',
+        'booking_reference',
         'status',
-        'total_price'
+        'passengers_count',
+        'total_price',
+        'currency',
+        'expires_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => BookingStatus::class,
+        ];
+    }
 
     public function user()
     {
@@ -30,6 +42,11 @@ class Booking extends Model
         return $this->hasMany(Passenger::class);
     }
 
+    public function extras()
+    {
+        return $this->hasMany(BookingExtra::class);
+    }
+
     public function payment()
     {
         return $this->hasOne(Payment::class);
@@ -37,6 +54,6 @@ class Booking extends Model
 
     public function ticket()
     {
-        return $this->hasOne(Ticket::class);
+        return $this->hasMany(Ticket::class);
     }
 }

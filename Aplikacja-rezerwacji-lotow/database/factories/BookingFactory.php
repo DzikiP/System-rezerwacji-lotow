@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Enums\BookingStatus;
 use App\Models\Booking;
-use App\Models\User;
 use App\Models\Flight;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BookingFactory extends Factory
@@ -14,10 +15,10 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         $status = $this->faker->randomElement([
-            'pending',
-            'awaiting_payment',
-            'paid',
-            'cancelled'
+            BookingStatus::Pending,
+            BookingStatus::AwaitingPayment,
+            BookingStatus::Paid,
+            BookingStatus::Cancelled,
         ]);
 
         $passengers = $this->faker->numberBetween(1, 6);
