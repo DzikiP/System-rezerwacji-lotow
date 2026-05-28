@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <section class="min-h-screen bg-gray-950 text-white pt-32 pb-20">
+    <section class="min-h-screen bg-gray-950 text-white pt-10 pb-20">
 
         <div class="container mx-auto px-6">
 

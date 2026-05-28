@@ -15,10 +15,10 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         $status = $this->faker->randomElement([
-            BookingStatus::Pending,
-            BookingStatus::AwaitingPayment,
-            BookingStatus::Paid,
-            BookingStatus::Cancelled,
+            BookingStatus::PENDING,
+            BookingStatus::AWAITING_PAYMENT,
+            BookingStatus::PENDING,
+            BookingStatus::CANCELLED,
         ]);
 
         $passengers = $this->faker->numberBetween(1, 6);

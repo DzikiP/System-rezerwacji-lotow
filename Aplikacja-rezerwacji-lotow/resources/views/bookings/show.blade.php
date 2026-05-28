@@ -22,11 +22,12 @@
                     </p>
                 </div>
 
+                <!-- STATUS -->
                 <div class="text-right">
                     <p class="text-gray-400">Status</p>
-                    <span class="inline-block px-4 py-2 rounded-xl text-sm font-semibold
-                    {{ $booking->status->value === 'confirmed' ? 'bg-green-600/20 text-green-400' : 'bg-yellow-600/20 text-yellow-400' }}">
-                    {{ ucfirst($booking->status->value) }}
+
+                    <span class="inline-block px-4 py-2 rounded-xl text-sm font-semibold {{ $booking->status->color() }}">
+                    {{ $booking->status->label() }}
                 </span>
                 </div>
 
@@ -41,29 +42,31 @@
 
                     <div>
                         <p class="text-gray-400">Airline</p>
-                        <p class="text-xl font-semibold">{{ $booking->flight->airline }}</p>
+                        <p class="text-xl font-semibold">
+                            {{ $booking->flight?->airline }}
+                        </p>
                     </div>
 
                     <div>
                         <p class="text-gray-400">Route</p>
                         <p class="text-xl font-semibold">
-                            {{ $booking->flight->origin_airport }}
+                            {{ $booking->flight?->origin_airport }}
                             →
-                            {{ $booking->flight->destination_airport }}
+                            {{ $booking->flight?->destination_airport }}
                         </p>
                     </div>
 
                     <div>
                         <p class="text-gray-400">Departure</p>
                         <p class="text-xl font-semibold">
-                            {{ $booking->flight->departure_time }}
+                            {{ \Carbon\Carbon::parse($booking->flight?->departure_time)->format('Y-m-d H:i') }}
                         </p>
                     </div>
 
                     <div>
                         <p class="text-gray-400">Arrival</p>
                         <p class="text-xl font-semibold">
-                            {{ $booking->flight->arrival_time }}
+                            {{ \Carbon\Carbon::parse($booking->flight?->arrival_time)->format('Y-m-d H:i') }}
                         </p>
                     </div>
 
@@ -78,7 +81,7 @@
 
                 <div class="space-y-4">
 
-                    @foreach($booking->passengers as $passenger)
+                    @forelse($booking->passengers as $passenger)
                         <div class="bg-gray-800 p-5 rounded-2xl flex justify-between items-center">
 
                             <div>
@@ -98,7 +101,9 @@
                             </div>
 
                         </div>
-                    @endforeach
+                    @empty
+                        <p class="text-gray-400">No passengers found</p>
+                    @endforelse
 
                 </div>
 
@@ -112,7 +117,8 @@
                     <div>
                         <p class="text-gray-400">Total price</p>
                         <p class="text-3xl font-bold">
-                            {{ $booking->total_price }} {{ $booking->currency }}
+                            {{ number_format($booking->total_price, 2) }}
+                            {{ $booking->currency }}
                         </p>
                     </div>
 
