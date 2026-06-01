@@ -28,64 +28,78 @@
                 </p>
             </div>
 
-            <!-- Search Box -->
-            <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 max-w-6xl shadow-2xl">
+            {{-- SEARCH FORM --}}
+            <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 max-w-6xl mx-auto shadow-2xl">
 
-                <form class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <form method="GET"
+                      action="{{ route('flights.search') }}"
+                      class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
 
-                    <!-- From -->
-                    <div>
-                        <label class="block text-sm mb-2 text-gray-300">From</label>
-                        <input
-                            type="text"
-                            placeholder="Warsaw"
-                            class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
+                    <!-- FROM -->
+                    <div class="md:col-span-1">
+                        <label class="text-sm text-gray-300 mb-2 block">From</label>
+                        <input name="from"
+                               type="text"
+                               placeholder="CDG"
+                               class="w-full bg-gray-900/80 text-white p-3 rounded-xl border border-gray-700
+                          focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
-                    <!-- To -->
-                    <div>
-                        <label class="block text-sm mb-2 text-gray-300">To</label>
-                        <input
-                            type="text"
-                            placeholder="Tokyo"
-                            class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
+                    <!-- TO -->
+                    <div class="md:col-span-1">
+                        <label class="text-sm text-gray-300 mb-2 block">To</label>
+                        <input name="to"
+                               type="text"
+                               placeholder="WAW"
+                               class="w-full bg-gray-900/80 text-white p-3 rounded-xl border border-gray-700
+                          focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
-                    <!-- Departure -->
-                    <div>
-                        <label class="block text-sm mb-2 text-gray-300">Departure</label>
-                        <input
-                            type="date"
-                            class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                    </div>
-
-                    <!-- Passengers -->
-                    <div>
-                        <label class="block text-sm mb-2 text-gray-300">Passengers</label>
-                        <select
-                            class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option>1 Passenger</option>
-                            <option>2 Passengers</option>
-                            <option>3 Passengers</option>
-                            <option>4+ Passengers</option>
+                    <!-- TRIP TYPE -->
+                    <div class="md:col-span-1">
+                        <label class="text-sm text-gray-300 mb-2 block">Trip</label>
+                        <select name="trip_type"
+                                id="tripType"
+                                class="w-full bg-gray-900/80 text-white p-3 rounded-xl border border-gray-700
+                           focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="one_way">One way</option>
+                            <option value="round_trip">Round trip</option>
                         </select>
                     </div>
 
-                    <!-- Button -->
-                    <div class="flex items-end">
-                        <button
-                            class="w-full bg-blue-600 hover:bg-blue-700 transition rounded-xl py-3 font-semibold shadow-lg"
-                        >
-                            Search Flights
+                    <!-- DEPARTURE -->
+                    <div class="md:col-span-1">
+                        <label class="text-sm text-gray-300 mb-2 block">Departure</label>
+                        <input name="departure_date"
+                               type="date"
+                               class="w-full bg-gray-900/80 text-white p-3 rounded-xl border border-gray-700
+                          focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <!-- RETURN -->
+                    <div class="md:col-span-1">
+                        <label class="text-sm text-gray-300 mb-2 block">Return</label>
+                        <input name="return_date"
+                               id="returnDate"
+                               type="date"
+                               class="w-full bg-gray-900/80 text-white p-3 rounded-xl border border-gray-700
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 opacity-50"
+                               disabled>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <div class="md:col-span-1">
+                        <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-semibold
+                           p-3 rounded-xl shadow-lg">
+                            Search
                         </button>
                     </div>
 
                 </form>
             </div>
+
+
 
         </div>
     </section>
@@ -199,4 +213,26 @@
 
     </section>
 
+@endsection
+
+@section('scripts')
+    <!-- JS: toggle return date -->
+    <script>
+        const tripType = document.getElementById('tripType');
+        const returnDate = document.getElementById('returnDate');
+
+        function toggleReturn() {
+            if (tripType.value === 'round_trip') {
+                returnDate.disabled = false;
+                returnDate.classList.remove('opacity-50');
+            } else {
+                returnDate.disabled = true;
+                returnDate.value = '';
+                returnDate.classList.add('opacity-50');
+            }
+        }
+
+        tripType.addEventListener('change', toggleReturn);
+        toggleReturn();
+    </script>
 @endsection

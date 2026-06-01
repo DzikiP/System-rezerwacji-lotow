@@ -18,11 +18,6 @@
                     Home
                 </a>
 
-                <a href="{{ url('/flights') }}"
-                   class="{{ request()->is('flights') ? 'text-white' : 'text-gray-300' }} hover:text-white transition">
-                    Flights
-                </a>
-
                 <a href="#"
                    class="text-gray-300 hover:text-white transition">
                     Destinations
