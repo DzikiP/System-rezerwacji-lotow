@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Airport;
 use App\Models\Booking;
-use App\Models\Flight;
 use App\Models\Passenger;
 use App\Models\Payment;
 use App\Models\Role;
@@ -44,51 +44,53 @@ class DatabaseSeeder extends Seeder
             ]);
 
         // =========================
-        // 3. FLIGHTS
+        // 3. AIRPORTS SEEDER
         // =========================
-        $flights = Flight::factory()
-            ->count(30)
-            ->create();
+        $this->call(AirportSeeder::class);
+
+        $airports = Airport::all();
 
         // =========================
-        // 4. BOOKINGS (core)
+        // 4. BOOKINGS (NO FLIGHTS TABLE)
         // =========================
         Booking::factory()
             ->count(50)
             ->make()
-            ->each(function ($booking) use ($users, $flights) {
+            ->each(function ($booking) use ($users, $airports) {
+
+                $from = $airports->random();
+                $to   = $airports->where('id', '!=', $from->id)->random();
 
                 $booking->user_id = $users->random()->id;
-                $booking->flight_id = $flights->random()->id;
 
                 $booking->booking_reference = strtoupper(Str::random(8));
+
+                $booking->status = 'pending';
+                $booking->currency = 'PLN';
+                $booking->total_price = rand(200, 2000);
+                $booking->passengers_count = rand(1, 4);
 
                 $booking->save();
 
                 // =========================
-                // PASSENGERS (spójne count)
+                // PASSENGERS
                 // =========================
-                $passengersCount = rand(1, 4);
-
                 Passenger::factory()
-                    ->count($passengersCount)
+                    ->count($booking->passengers_count)
                     ->create([
                         'booking_id' => $booking->id
                     ]);
 
-                $booking->update([
-                    'passengers_count' => $passengersCount
-                ]);
-
                 // =========================
-                // PAYMENT (1 per booking)
+                // PAYMENT
                 // =========================
                 $payment = Payment::factory()->create([
                     'booking_id' => $booking->id,
+                    'status' => fake()->randomElement(['pending', 'paid'])
                 ]);
 
                 // =========================
-                // TICKET only if paid
+                // TICKET
                 // =========================
                 if ($payment->status === 'paid') {
 

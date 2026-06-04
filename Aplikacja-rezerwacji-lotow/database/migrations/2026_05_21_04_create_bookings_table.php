@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->decimal('total_price', 10, 2);
             $table->string('currency', 3)->default('USD');
 
-            $table->json('flight_data');
+            $table->json('flight_data')->nullable();
 
             $table->dateTime('expires_at')->nullable();
 

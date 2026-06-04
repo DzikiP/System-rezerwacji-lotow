@@ -1,13 +1,11 @@
 <?php
 
+use App\Http\Controllers\AirportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AuthController;
 
-Route::get('/', function () {
-    return view('home');
-});
 
 Route::get('/', [FlightController::class, 'home'])->name('home');
 
@@ -29,7 +27,9 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::get('/flights/search', [FlightController::class, 'search'])
     ->name('flights.search');
 
-// BOOKINGS (SNAPSHOT SYSTEM)
+Route::get('/api/airports/search', [AirportController::class, 'search']);
+
+// BOOKINGS
 Route::middleware('auth')->group(function () {
 
     Route::post('/bookings', [BookingController::class, 'store'])

@@ -40,7 +40,6 @@ class BookingController extends Controller
 
         $booking = Booking::create([
             'user_id' => auth()->id() ?? 1,
-            'flight_id' => $flight->id,
             'booking_reference' => strtoupper(Str::random(8)),
             'status' => BookingStatus::CONFIRMED,
             'currency' => $flight->currency,
