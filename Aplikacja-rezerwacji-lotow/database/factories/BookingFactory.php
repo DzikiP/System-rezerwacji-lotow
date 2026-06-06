@@ -4,9 +4,9 @@ namespace Database\Factories;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
-use App\Models\Flight;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class BookingFactory extends Factory
 {
@@ -17,38 +17,32 @@ class BookingFactory extends Factory
         $status = $this->faker->randomElement([
             BookingStatus::PENDING,
             BookingStatus::AWAITING_PAYMENT,
-            BookingStatus::PENDING,
+            BookingStatus::PAID,
             BookingStatus::CANCELLED,
         ]);
 
-        $passengers = $this->faker->numberBetween(1, 6);
+        $passengers = $this->faker->numberBetween(1, 5);
 
-        $flight = Flight::inRandomOrder()->first();
-
-        if (!$flight) {
-            throw new \Exception('No flights found. Seed flights first.');
-        }
-
-        $basePrice = $flight->price * $passengers;
+        // SNAPSHOT PRICE (no flight dependency)
+        $pricePerPassenger = $this->faker->numberBetween(150, 900);
+        $totalPrice = $pricePerPassenger * $passengers;
 
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
 
-            'flight_id' => $flight->id,
-
-            'booking_reference' => strtoupper($this->faker->bothify('PNR###??')),
+            'booking_reference' => strtoupper(Str::random(8)),
 
             'status' => $status,
 
             'passengers_count' => $passengers,
 
-            'total_price' => $basePrice,
+            'total_price' => $totalPrice,
 
-            'currency' => $flight->currency,
+            'currency' => 'PLN',
 
             'expires_at' =>
-                $status === 'pending'
-                    ? now()->addMinutes(10)
+                $status === BookingStatus::PENDING
+                    ? now()->addMinutes(15)
                     : null,
         ];
     }

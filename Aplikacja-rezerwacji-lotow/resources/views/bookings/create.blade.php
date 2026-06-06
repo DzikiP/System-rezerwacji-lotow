@@ -11,35 +11,49 @@
 
                 <h1 class="text-4xl font-bold mb-6">Confirm Booking</h1>
 
-                <div class="grid grid-cols-2 gap-6 text-gray-300">
+                @php
+                    $segment = $flight['flights'][0] ?? null;
+                @endphp
 
-                    <div>
-                        <p class="text-gray-400">Airline</p>
-                        <p class="text-xl font-semibold">{{ $flight->airline }}</p>
+                @if($segment)
+
+                    <div class="grid grid-cols-2 gap-6 text-gray-300">
+
+                        <div>
+                            <p class="text-gray-400">Airline</p>
+                            <p class="text-xl font-semibold">
+                                {{ $segment['airline'] ?? 'Unknown' }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-400">Route</p>
+                            <p class="text-xl font-semibold">
+                                {{ $segment['departure_airport']['id'] ?? '' }}
+                                →
+                                {{ $segment['arrival_airport']['id'] ?? '' }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-400">Departure</p>
+                            <p class="text-xl font-semibold">
+                                {{ \Carbon\Carbon::parse($segment['departure_airport']['time'] ?? now())->format('d M Y H:i') }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-400">Price per passenger</p>
+                            <p class="text-xl font-semibold">
+                                {{ number_format($flight['price'] ?? 0) }} PLN
+                            </p>
+                        </div>
+
                     </div>
 
-                    <div>
-                        <p class="text-gray-400">Route</p>
-                        <p class="text-xl font-semibold">
-                            {{ $flight->origin_airport }} → {{ $flight->destination_airport }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p class="text-gray-400">Departure</p>
-                        <p class="text-xl font-semibold">
-                            {{ $flight->departure_time }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p class="text-gray-400">Price per passenger</p>
-                        <p class="text-xl font-semibold">
-                            {{ $flight->price }} {{ $flight->currency }}
-                        </p>
-                    </div>
-
-                </div>
+                @else
+                    <p class="text-gray-400">Flight data not available</p>
+                @endif
 
             </div>
 
@@ -48,7 +62,8 @@
 
                 @csrf
 
-                <input type="hidden" name="flight_id" value="{{ $flight->id }}">
+                <!-- ważne: index zamiast flight_id -->
+                <input type="hidden" name="flight_index" value="{{ $index }}">
 
                 <!-- PASSENGERS -->
                 <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8">
@@ -83,13 +98,12 @@
 
 @endsection
 
-
 @section('scripts')
 
     <script>
         let i = 0;
 
-        function addPassenger(prefilled = {}) {
+        function addPassenger() {
 
             const container = document.getElementById('passengers');
 
@@ -97,40 +111,40 @@
             div.className = "bg-gray-800 p-6 rounded-2xl space-y-3";
 
             div.innerHTML = `
-        <div class="flex justify-between items-center">
-            <h3 class="font-bold">Passenger</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold">Passenger</h3>
 
-            <button type="button"
-                    class="text-red-400"
-                    onclick="removePassenger(this)">
-                Remove
-            </button>
-        </div>
+                <button type="button"
+                        class="text-red-400"
+                        onclick="removePassenger(this)">
+                    Remove
+                </button>
+            </div>
 
-        <input name="passengers[${i}][first_name]" placeholder="First name"
-               class="w-full p-3 bg-gray-900 rounded-xl">
+            <input name="passengers[${i}][first_name]" placeholder="First name"
+                   class="w-full p-3 bg-gray-900 rounded-xl">
 
-        <input name="passengers[${i}][last_name]" placeholder="Last name"
-               class="w-full p-3 bg-gray-900 rounded-xl">
+            <input name="passengers[${i}][last_name]" placeholder="Last name"
+                   class="w-full p-3 bg-gray-900 rounded-xl">
 
-        <input type="date" name="passengers[${i}][birth_date]"
-               class="w-full p-3 bg-gray-900 rounded-xl">
+            <input type="date" name="passengers[${i}][birth_date]"
+                   class="w-full p-3 bg-gray-900 rounded-xl">
 
-        <input name="passengers[${i}][nationality]" placeholder="Nationality"
-               class="w-full p-3 bg-gray-900 rounded-xl">
+            <input name="passengers[${i}][nationality]" placeholder="Nationality"
+                   class="w-full p-3 bg-gray-900 rounded-xl">
 
-        <input name="passengers[${i}][document_number]" placeholder="Document number"
-               class="w-full p-3 bg-gray-900 rounded-xl">
+            <input name="passengers[${i}][document_number]" placeholder="Document number"
+                   class="w-full p-3 bg-gray-900 rounded-xl">
 
-        <select name="passengers[${i}][passenger_type]"
-                class="w-full p-3 bg-gray-900 rounded-xl">
+            <select name="passengers[${i}][passenger_type]"
+                    class="w-full p-3 bg-gray-900 rounded-xl">
 
-            <option value="adult">Adult</option>
-            <option value="child">Child</option>
-            <option value="infant">Infant</option>
+                <option value="adult">Adult</option>
+                <option value="child">Child</option>
+                <option value="infant">Infant</option>
 
-        </select>
-    `;
+            </select>
+        `;
 
             container.appendChild(div);
             i++;

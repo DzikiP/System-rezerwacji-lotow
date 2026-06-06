@@ -1,16 +1,15 @@
 <?php
 
+use App\Http\Controllers\AirportController;
 use Illuminate\Support\Facades\Route;
-use App\Models\Booking;
-use Illuminate\Http\Request;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AuthController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
+Route::get('/', [FlightController::class, 'home'])->name('home');
+
+// AUTH
 Route::middleware('guest')->group(function () {
 
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -20,23 +19,32 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
+// FLIGHTS
+Route::get('/flights/search', [FlightController::class, 'search'])
+    ->name('flights.search');
+
+Route::get('/flights/{index}', [FlightController::class, 'show'])
+    ->name('flights.show');
+
+Route::get('/api/airports/search', [AirportController::class, 'search']);
+
+// BOOKINGS
 Route::middleware('auth')->group(function () {
+
+    Route::get('/bookings/create', [BookingController::class, 'create'])
+        ->name('bookings.create');
+
+    Route::post('/bookings', [BookingController::class, 'store'])
+        ->name('bookings.store');
+
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])
+        ->name('bookings.show');
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 });
-
-//Flights routes
-Route::get('/flights', [FlightController::class, 'index']);
-Route::get('/flights/{flight}', [FlightController::class, 'show']);
-Route::get('/flights/{flight}/book', [BookingController::class, 'create'])
-    ->name('bookings.create');
-
-//Booking routes
-Route::post('/bookings', [BookingController::class, 'store'])
-    ->name('bookings.store');
-
-Route::get('/bookings/{booking}', [BookingController::class, 'show'])
-    ->name('bookings.show');

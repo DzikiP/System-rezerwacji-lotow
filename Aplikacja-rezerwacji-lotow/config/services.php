@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'serpapi' => [
+        'key' => env('SERP_API_KEY'),
+        'url' => env('SERP_API_URL', 'https://serpapi.com/search.json'),
+    ],
+
 ];

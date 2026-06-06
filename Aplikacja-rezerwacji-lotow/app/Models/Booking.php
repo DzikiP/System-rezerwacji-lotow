@@ -9,33 +9,31 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
-        'flight_id',
         'booking_reference',
         'status',
         'passengers_count',
         'total_price',
         'currency',
         'expires_at',
+        'flight_data',
     ];
 
     protected function casts(): array
     {
         return [
             'status' => BookingStatus::class,
+            'flight_data' => 'array',
+            'expires_at' => 'datetime',
         ];
     }
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function flight()
-    {
-        return $this->belongsTo(Flight::class);
-    }
 
     public function passengers()
     {

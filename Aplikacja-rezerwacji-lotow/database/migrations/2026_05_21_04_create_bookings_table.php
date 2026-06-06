@@ -12,7 +12,6 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('flight_id')->constrained('flights');
 
             $table->string('booking_reference')->unique();
 
@@ -21,7 +20,9 @@ return new class extends Migration {
 
             $table->integer('passengers_count');
             $table->decimal('total_price', 10, 2);
-            $table->string('currency', 3)->default('PLN');
+            $table->string('currency', 3)->default('USD');
+
+            $table->json('flight_data')->nullable();
 
             $table->dateTime('expires_at')->nullable();
 
@@ -33,4 +34,5 @@ return new class extends Migration {
     {
         Schema::dropIfExists('bookings');
     }
+
 };
