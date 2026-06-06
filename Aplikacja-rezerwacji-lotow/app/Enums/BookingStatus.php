@@ -45,7 +45,7 @@ enum BookingStatus: string
     }
 
     // =========================
-    // CHECKERS (opcjonalne ale bardzo wygodne)
+    // CHECKERS
     // =========================
     public function isPaid(): bool
     {

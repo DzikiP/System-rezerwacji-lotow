@@ -32,7 +32,7 @@
 
             <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl">
                 <p class="text-gray-400 text-sm">Następny krok</p>
-                <a href="{{ url('/flights') }}"
+                <a href="{{ url('/') }}"
                    class="text-blue-400 hover:underline font-medium mt-2 inline-block">
                     Zarezerwuj lot →
                 </a>
@@ -48,9 +48,9 @@
                     Ostatnie rezerwacje
                 </h2>
 
-                <a href="{{ url('/flights') }}"
+                <a href="{{ url('/') }}"
                    class="text-blue-400 hover:underline">
-                    Zobacz wszystkie loty
+                    Wyszukaj loty
                 </a>
             </div>
 

@@ -34,9 +34,9 @@ class FlightSearchService
                     'outbound_date' => $params['date'],
                     'return_date' => $params['return_date'] ?? null,
 
-                    'currency' => 'USD',
-                    'hl' => 'en',
-                    'gl' => 'us',
+                    'currency' => 'PLN',
+                    'hl' => 'pl',
+                    'gl' => 'pl',
                 ]);
 
             if ($response->failed()) {

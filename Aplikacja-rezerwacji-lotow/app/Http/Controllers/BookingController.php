@@ -12,15 +12,29 @@ use Illuminate\Support\Str;
 class BookingController extends Controller
 {
 
-    public function create(Flight $flight)
+    public function create(Request $request)
     {
-        return view('bookings.create', compact('flight'));
+        $index = $request->query('index');
+
+        $cacheKey = cache()->get('last_search_key');
+        $flights = cache()->get($cacheKey);
+
+        $flight = $flights[$index] ?? null;
+
+        if (!$flight) {
+            return redirect()->route('home')->with('error', 'Flight not found');
+        }
+
+        return view('bookings.create', [
+            'flight' => $flight,
+            'index' => $index
+        ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'flight_id' => 'required|exists:flights,id',
+            'flight_index' => 'required|integer',
             'passengers' => 'required|array|min:1',
             'passengers.*.first_name' => 'required',
             'passengers.*.last_name' => 'required',
@@ -30,32 +44,28 @@ class BookingController extends Controller
             'passengers.*.passenger_type' => 'required|in:adult,child,infant',
         ]);
 
-        $flight = Flight::findOrFail($request->flight_id);
+        $cacheKey = cache()->get('last_search_key');
+        $flights = cache()->get($cacheKey);
 
-        $passengers = $request->input('passengers', []);
+        $flight = $flights[$request->flight_index] ?? null;
 
-        if (empty($passengers)) {
-            return back()->withErrors(['passengers' => 'Add at least one passenger']);
+        if (!$flight) {
+            return back()->withErrors(['flight' => 'Flight not found']);
         }
 
         $booking = Booking::create([
-            'user_id' => auth()->id() ?? 1,
+            'user_id' => auth()->id(),
             'booking_reference' => strtoupper(Str::random(8)),
             'status' => BookingStatus::CONFIRMED,
-            'currency' => $flight->currency,
-            'passengers_count' => count($passengers),
-            'total_price' => $flight->price * count($passengers),
+            'currency' => 'PLN',
+            'passengers_count' => count($request->passengers),
+            'total_price' => $flight['price'] * count($request->passengers),
+
+            'flight_data' => json_encode($flight),
         ]);
 
-        foreach ($passengers as $p) {
-            $booking->passengers()->create([
-                'first_name' => $p['first_name'],
-                'last_name' => $p['last_name'],
-                'birth_date' => $p['birth_date'],
-                'nationality' => $p['nationality'],
-                'document_number' => $p['document_number'],
-                'passenger_type' => $p['passenger_type'],
-            ]);
+        foreach ($request->passengers as $p) {
+            $booking->passengers()->create($p);
         }
 
         return redirect()->route('bookings.show', $booking);
@@ -66,8 +76,17 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-        $booking->load(['passengers', 'flight']);
+        $booking->load('passengers');
 
-        return view('bookings.show', compact('booking'));
+        $flight = json_decode($booking->flight_data, true);
+
+        if (!$flight) {
+            abort(404, 'Flight data not found');
+        }
+
+        return view('bookings.show', [
+            'booking' => $booking,
+            'flight' => $flight,
+        ]);
     }
 }

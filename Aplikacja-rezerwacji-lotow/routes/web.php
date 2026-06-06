@@ -23,14 +23,20 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// FLIGHTS (API SEARCH)
+// FLIGHTS
 Route::get('/flights/search', [FlightController::class, 'search'])
     ->name('flights.search');
+
+Route::get('/flights/{index}', [FlightController::class, 'show'])
+    ->name('flights.show');
 
 Route::get('/api/airports/search', [AirportController::class, 'search']);
 
 // BOOKINGS
 Route::middleware('auth')->group(function () {
+
+    Route::get('/bookings/create', [BookingController::class, 'create'])
+        ->name('bookings.create');
 
     Route::post('/bookings', [BookingController::class, 'store'])
         ->name('bookings.store');
