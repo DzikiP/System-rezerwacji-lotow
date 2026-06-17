@@ -4,47 +4,54 @@
 
     <section class="min-h-screen bg-gray-950 text-white pt-32 pb-20">
 
-        <div class="container mx-auto px-6 max-w-4xl">
+        <div class="container mx-auto px-6 max-w-5xl">
 
-            <!-- FLIGHT INFO -->
+            <!-- HEADER -->
+            <div class="mb-10">
+                <h1 class="text-4xl font-bold">Confirm Booking</h1>
+                <p class="text-gray-400 mt-2">Review flight details and add passengers</p>
+            </div>
+
+            @php
+                $segment = $flight['flights'][0] ?? null;
+            @endphp
+
+                <!-- FLIGHT SUMMARY -->
             <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 mb-10">
-
-                <h1 class="text-4xl font-bold mb-6">Confirm Booking</h1>
-
-                @php
-                    $segment = $flight['flights'][0] ?? null;
-                @endphp
 
                 @if($segment)
 
-                    <div class="grid grid-cols-2 gap-6 text-gray-300">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
 
+                        <!-- LEFT -->
                         <div>
-                            <p class="text-gray-400">Airline</p>
+                            <p class="text-gray-400 text-sm">Airline</p>
                             <p class="text-xl font-semibold">
                                 {{ $segment['airline'] ?? 'Unknown' }}
                             </p>
-                        </div>
 
-                        <div>
-                            <p class="text-gray-400">Route</p>
-                            <p class="text-xl font-semibold">
-                                {{ $segment['departure_airport']['id'] ?? '' }}
-                                →
-                                {{ $segment['arrival_airport']['id'] ?? '' }}
+                            <p class="text-gray-500 text-sm mt-2">
+                                Flight {{ $segment['flight_number'] ?? '-' }}
                             </p>
                         </div>
 
-                        <div>
-                            <p class="text-gray-400">Departure</p>
-                            <p class="text-xl font-semibold">
-                                {{ \Carbon\Carbon::parse($segment['departure_airport']['time'] ?? now())->format('d M Y H:i') }}
-                            </p>
+                        <!-- CENTER ROUTE -->
+                        <div class="text-center">
+                            <div class="text-2xl font-bold tracking-wide">
+                                {{ $segment['departure_airport']['id'] ?? '---' }}
+                                <span class="text-gray-500">→</span>
+                                {{ $segment['arrival_airport']['id'] ?? '---' }}
+                            </div>
+
+                            <div class="text-gray-400 text-sm mt-2">
+                                {{ \Carbon\Carbon::parse($segment['departure_airport']['time'] ?? now())->format('d M Y • H:i') }}
+                            </div>
                         </div>
 
-                        <div>
-                            <p class="text-gray-400">Price per passenger</p>
-                            <p class="text-xl font-semibold">
+                        <!-- RIGHT PRICE -->
+                        <div class="text-right">
+                            <p class="text-gray-400 text-sm">Price per passenger</p>
+                            <p class="text-3xl font-bold text-blue-400">
                                 {{ number_format($flight['price'] ?? 0) }} PLN
                             </p>
                         </div>
@@ -62,14 +69,12 @@
 
                 @csrf
 
-                <!-- ważne: index zamiast flight_id -->
                 <input type="hidden" name="flight_index" value="{{ $index }}">
 
                 <!-- PASSENGERS -->
                 <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8">
 
                     <div class="flex justify-between items-center mb-6">
-
                         <h2 class="text-2xl font-bold">Passengers</h2>
 
                         <button type="button"
@@ -77,7 +82,6 @@
                                 class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl">
                             + Add passenger
                         </button>
-
                     </div>
 
                     <div id="passengers" class="space-y-6"></div>
@@ -160,6 +164,15 @@
 
             btn.closest('.bg-gray-800').remove();
         }
+
+        document.querySelector('form').addEventListener('submit', (e) => {
+            const passengers = document.querySelectorAll('#passengers > div');
+
+            if (passengers.length === 0) {
+                e.preventDefault();
+                alert('Add at least one passenger');
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             addPassenger();

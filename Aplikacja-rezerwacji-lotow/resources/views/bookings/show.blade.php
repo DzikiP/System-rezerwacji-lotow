@@ -31,17 +31,22 @@
                     </div>
                 </div>
 
-            </div>
+                <div class="flex gap-3 mt-4">
 
-            @php
-                $flight = json_decode($booking->flight_data, true);
-                $segment = $flight['flights'][0] ?? null;
-            @endphp
+                    <a href="{{ route('bookings.edit', $booking) }}"
+                       class="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-xl text-sm font-semibold">
+                        Edit booking
+                    </a>
+
+                </div>
+
+            </div>
 
                 <!-- FLIGHT CARD -->
             @php
-                $flight = json_decode($booking->flight_data, true);
+                $flight = $booking->flight_data;
             @endphp
+
 
             @if($flight)
 

@@ -14,77 +14,95 @@ class FlightController extends Controller
 
     public function search(Request $request)
     {
-        // 1. walidacja minimalna
+        // 1. VALIDATION
         if (!$request->from || !$request->to || !$request->departure_date) {
             return redirect()->route('home')
                 ->with('error', 'Please fill all fields');
         }
 
-        // 2. trip type
-        $tripType = $request->trip_type ?? 'one_way';
-
+        // 2. INPUT
         $from = strtoupper($request->from);
         $to = strtoupper($request->to);
+        $tripType = $request->trip_type ?? 'one_way';
+        $returnDate = $request->return_date ?? null;
 
-        // 3. cache
-        $cacheKey = 'flights_' . md5($from . $to . $request->departure_date . $tripType);
+        $isAnywhere = $to === 'ANYWHERE';
 
-        // 4. cache check
+        // 3. CACHE KEY
+        $cacheKey = 'flights_' . md5(
+                $from . $to . $request->departure_date . $tripType . $returnDate
+            );
+
+        // 4. CACHE CHECK
         if (cache()->has($cacheKey)) {
             $results = cache()->get($cacheKey);
         } else {
 
-            // 5. API PARAMS
-            $params = [
-                'engine' => 'google_flights',
-                'departure_id' => $from,
-                'arrival_id' => $to,
-                'outbound_date' => $request->departure_date,
-                'currency' => 'PLN',
-                'api_key' => env('SERP_API_KEY'),
+            // 5. AIRPORTS FOR ANYWHERE MODE
+            $popularAirports = [
+                'LHR' => 10,
+                'AMS' => 9,
+                'CDG' => 9,
+                'BER' => 8,
+                'BCN' => 8,
+                'MAD' => 7,
+                'ROM' => 7,
+                'FCO' => 6,
+                'STN' => 6,
+                'LTN' => 6,
             ];
 
-            // LOGIKA ONE-WAY / ROUND-TRIP
-            if ($tripType === 'round_trip') {
-                $params['type'] = 1;
+            $allFlights = [];
 
-                if ($request->return_date) {
-                    $params['return_date'] = $request->return_date;
+            // 6. FETCH LOGIC
+            if ($isAnywhere) {
+
+                $destinations = array_keys($popularAirports);
+
+                shuffle($destinations);
+
+                $destinations = array_slice($destinations, 0, 4);
+
+                foreach ($destinations as $destination) {
+
+                    if ($destination === $from) {
+                        continue;
+                    }
+
+                    $data = $this->fetchFlights(
+                        $from,
+                        $destination,
+                        $request->departure_date,
+                        $tripType,
+                        $returnDate
+                    );
+
+                    $data = array_slice($data, 0, 3);
+
+                    $allFlights = array_merge($allFlights, $data);
                 }
+
             } else {
-                $params['type'] = 2;
+
+                $allFlights = $this->fetchFlights(
+                    $from,
+                    $to,
+                    $request->departure_date,
+                    $tripType,
+                    $returnDate
+                );
             }
 
-            // 6. REQUEST
-            $response = Http::get('https://serpapi.com/search.json', $params);
-
-            $data = $response->json();
-
-            // 7. ERROR HANDLING
-            if (isset($data['error'])) {
-                return redirect()->route('home')
-                    ->with('error', $data['error']);
-            }
+            // 7. LIMIT RESULTS
+            $allFlights = array_slice($allFlights, 0, 40);
 
             // 8. NORMALIZE
-            $flightsData = $data['best_flights'] ?? $data['other_flights'] ?? [];
-
-            $flightsData = collect($flightsData)
-                ->filter(function ($flight) use ($from, $to) {
-
-                    $segment = $flight['flights'][0] ?? null;
-
-                    if (!$segment) return false;
-
-                    $dep = $segment['departure_airport']['id'] ?? null;
-                    $arr = $segment['arrival_airport']['id'] ?? null;
-
-                    return $dep === $from && $arr === $to;
-                })
-                ->values();
-
-            $results = collect($flightsData)
+            $results = collect($allFlights)
                 ->map(function ($flight) {
+
+                    if (!isset($flight['flights'][0])) {
+                        return null;
+                    }
 
                     $segment = $flight['flights'][0];
 
@@ -110,32 +128,39 @@ class FlightController extends Controller
                         'airplane' => $segment['airplane'] ?? '',
                         'travel_class' => $segment['travel_class'] ?? '',
 
-                        'stops' => count($flight['flights']) - 1,
+                        'stops' => count($flight['flights'] ?? []) - 1,
 
                         'co2' => $flight['carbon_emissions']['this_flight'] ?? null,
                     ];
                 })
+                ->filter()
+                ->values()
                 ->toArray();
 
-            // 9. CACHE 10 MIN
+            // 9. SORT ANYWHERE
+            if ($isAnywhere) {
+                usort($results, fn($a, $b) => $a['price'] <=> $b['price']);
+            }
+
+            // 10. CACHE
             cache()->put($cacheKey, $results, now()->addMinutes(10));
             cache()->put('last_search_key', $cacheKey, now()->addMinutes(10));
         }
 
-        // 10. FILTERS
+        // 11. FILTERS
         if ($request->stops !== null) {
-            $results = array_filter($results, fn($f) =>
+            $results = array_values(array_filter($results, fn($f) =>
                 $f['stops'] <= (int)$request->stops
-            );
+            ));
         }
 
         if ($request->max_price) {
-            $results = array_filter($results, fn($f) =>
+            $results = array_values(array_filter($results, fn($f) =>
                 $f['price'] <= (int)$request->max_price
-            );
+            ));
         }
 
-        // 11. SORT
+        // 12. SORT OPTIONS
         if ($request->sort === 'price') {
             usort($results, fn($a, $b) => $a['price'] <=> $b['price']);
         }
@@ -146,21 +171,63 @@ class FlightController extends Controller
 
         $results = array_values($results);
 
-        // 12. VIEW
+        // 13. VIEW
         return view('flights.results', [
             'flights' => $results
         ]);
     }
 
+    /**
+     * SAFE API WRAPPER (AUTO DETECT TYPE)
+     */
+    private function fetchFlights($from, $to, $date, $tripType = 'one_way', $returnDate = null)
+    {
+        // AUTO DETECT TYPE
+        $type = 2; // one-way default
+
+        if ($tripType === 'round_trip' && $returnDate) {
+            $type = 1;
+        }
+
+        $params = [
+            'engine' => 'google_flights',
+            'departure_id' => $from,
+            'arrival_id' => $to,
+            'outbound_date' => $date,
+            'currency' => 'PLN',
+            'type' => $type,
+            'api_key' => env('SERP_API_KEY'),
+        ];
+
+        if ($type === 1) {
+            $params['return_date'] = $returnDate;
+        }
+
+        $response = Http::get('https://serpapi.com/search.json', $params);
+
+        $data = $response->json();
+
+        if (isset($data['error'])) {
+            logger()->error('SerpAPI error', $data);
+            return [];
+        }
+
+        return array_merge(
+            $data['best_flights'] ?? [],
+            $data['other_flights'] ?? []
+        );
+    }
+
     public function show($index)
     {
         $cacheKey = cache()->get('last_search_key');
-        $flights = cache()->get($cacheKey);
+        $flights = cache()->get($cacheKey, []);
 
         $flight = $flights[$index] ?? null;
 
         if (!$flight) {
-            return redirect()->route('home')->with('error', 'Flight not found');
+            return redirect()->route('home')
+                ->with('error', 'Flight not found');
         }
 
         return view('flights.show', [
