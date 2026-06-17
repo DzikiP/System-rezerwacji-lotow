@@ -7,12 +7,12 @@
         <div class="container mx-auto px-6 max-w-7xl">
 
             <h1 class="text-4xl font-bold mb-10">
-                Available Flights
+                Best Available Flights
             </h1>
 
             <div class="space-y-6">
 
-                @forelse($flights as $flight)
+                @forelse($flights as $index => $flight)
 
                     <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6">
 
@@ -56,7 +56,7 @@
                                         </div>
 
                                         <div class="text-gray-400">
-                                            {{ $flight['from'] }}
+                                            {{ $flight['from_name'] }} ({{ $flight['from'] }})
                                         </div>
                                     </div>
 
@@ -80,7 +80,7 @@
                                         </div>
 
                                         <div class="text-gray-400">
-                                            {{ $flight['to'] }}
+                                            {{ $flight['to_name'] }} ({{ $flight['to'] }})
                                         </div>
                                     </div>
 
@@ -99,10 +99,14 @@
                                     {{ $flight['travel_class'] }}
                                 </div>
 
-                                <a href="{{ route('flights.show', $loop->index) }}"
-                                   class="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold">
-                                    Select
-                                </a>
+                                <form method="GET" action="{{ route('bookings.create') }}">
+
+                                    <input type="hidden" name="flight_index" value="{{ $index }}">
+
+                                    <button class="w-full bg-blue-600 py-3 rounded-xl">
+                                        Select
+                                    </button>
+                                </form>
 
                             </div>
 

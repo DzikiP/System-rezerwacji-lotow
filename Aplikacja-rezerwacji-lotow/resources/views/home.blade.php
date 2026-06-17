@@ -222,13 +222,12 @@
 
 @endsection
 
-
 @section('scripts')
     <script>
 
         /*
         |--------------------------------------------------------------------------
-        | TRIP TYPE
+        | TRIP TYPE (bez zmian)
         |--------------------------------------------------------------------------
         */
 
@@ -236,14 +235,10 @@
         const returnDate = document.getElementById('returnDate');
 
         function toggleReturn() {
-
             if (tripType.value === 'round_trip') {
-
                 returnDate.disabled = false;
                 returnDate.classList.remove('opacity-50');
-
             } else {
-
                 returnDate.disabled = true;
                 returnDate.value = '';
                 returnDate.classList.add('opacity-50');
@@ -260,12 +255,67 @@
         |--------------------------------------------------------------------------
         */
 
-        async function setupAutocomplete(inputId, boxId) {
+        async function setupAutocomplete(inputId, boxId, allowAnywhere = false) {
 
             const input = document.getElementById(inputId);
             const box = document.getElementById(boxId);
 
             let timeout;
+
+            function renderAnywhere() {
+
+                return `
+                <div
+                    class="p-3 border-b border-gray-800 hover:bg-gray-800 cursor-pointer text-blue-400 font-semibold"
+                    data-iata="ANYWHERE"
+                >
+                    🌍 Anywhere
+                </div>
+            `;
+            }
+
+            function renderAirport(airport) {
+
+                return `
+                <div
+                    class="p-3 border-b border-gray-800 hover:bg-gray-800 cursor-pointer transition"
+                    data-iata="${airport.iata}"
+                >
+                    <div class="font-medium text-white">
+                        ✈ ${airport.city ?? 'Unknown city'}
+                    </div>
+
+                    <div class="text-xs text-gray-400">
+                        ${airport.country ?? ''} • ${airport.iata}
+                    </div>
+
+                    <div class="text-xs text-gray-500 mt-1">
+                        ${airport.label}
+                    </div>
+                </div>
+            `;
+            }
+
+            input.addEventListener('focus', () => {
+
+                const q = input.value.trim();
+
+                // jeśli TO input → pokaż od razu Anywhere
+                if (allowAnywhere) {
+
+                    let html = `
+            <div
+                class="p-3 border-b border-gray-800 hover:bg-gray-800 cursor-pointer text-blue-400 font-semibold"
+                data-iata="ANYWHERE"
+            >
+                🌍 Anywhere
+            </div>
+        `;
+
+                    box.innerHTML = html;
+                    box.classList.remove('hidden');
+                }
+            });
 
             input.addEventListener('input', () => {
 
@@ -274,6 +324,21 @@
                 const q = input.value.trim();
 
                 if (q.length < 2) {
+
+                    if (allowAnywhere) {
+
+                        box.innerHTML = `
+                            <div
+                                class="p-3 border-b border-gray-800 hover:bg-gray-800 cursor-pointer text-blue-400 font-semibold"
+                                data-iata="ANYWHERE"
+                            >
+                                🌍 Anywhere
+                            </div>
+                        `;
+
+                        box.classList.remove('hidden');
+                        return;
+                    }
 
                     box.classList.add('hidden');
                     return;
@@ -289,74 +354,84 @@
 
                         const data = await response.json();
 
-                        box.innerHTML = '';
+                        let html = '';
+
+                        // 🔥 ONLY FOR TO INPUT
+                        if (allowAnywhere) {
+                            html += renderAnywhere();
+                        }
 
                         if (!data.length) {
 
-                            box.innerHTML = `
+                            html += `
                             <div class="p-3 text-gray-400 text-sm">
                                 No airports found
                             </div>
                         `;
 
+                            box.innerHTML = html;
                             box.classList.remove('hidden');
                             return;
                         }
 
                         data.forEach(airport => {
-
-                            const item = document.createElement('div');
-
-                            item.className =
-                                'p-3 border-b border-gray-800 hover:bg-gray-800 cursor-pointer transition';
-
-                            item.innerHTML = `
-                            <div class="font-medium text-white">
-                                ✈ ${airport.city ?? 'Unknown city'}
-                            </div>
-
-                            <div class="text-xs text-gray-400">
-                                ${airport.country ?? ''} • ${airport.iata}
-                            </div>
-
-                            <div class="text-xs text-gray-500 mt-1">
-                                ${airport.label}
-                            </div>
-                        `;
-
-                            item.addEventListener('click', () => {
-
-                                input.value = airport.iata;
-
-                                box.classList.add('hidden');
-                            });
-
-                            box.appendChild(item);
+                            html += renderAirport(airport);
                         });
 
+                        box.innerHTML = html;
                         box.classList.remove('hidden');
 
                     } catch (e) {
-
                         console.error(e);
                     }
 
                 }, 300);
             });
 
+
+            /*
+            |--------------------------------------------------------------------------
+            | CLICK HANDLER
+            |--------------------------------------------------------------------------
+            */
+
+            box.addEventListener('click', (e) => {
+
+                const item = e.target.closest('[data-iata]');
+                if (!item) return;
+
+                const value = item.dataset.iata;
+
+                input.value = value;
+                input.dataset.iata = value;
+
+                if (value === 'ANYWHERE') {
+                    input.classList.add('text-blue-400');
+                } else {
+                    input.classList.remove('text-blue-400');
+                }
+
+                box.classList.add('hidden');
+            });
+
+
             document.addEventListener('click', (e) => {
 
-                if (
-                    !input.contains(e.target) &&
-                    !box.contains(e.target)
-                ) {
+                if (!input.contains(e.target) && !box.contains(e.target)) {
                     box.classList.add('hidden');
                 }
             });
         }
 
-        setupAutocomplete('fromInput', 'fromResults');
-        setupAutocomplete('toInput', 'toResults');
+
+        /*
+        |--------------------------------------------------------------------------
+        | INIT
+        |--------------------------------------------------------------------------
+        */
+
+        setupAutocomplete('fromInput', 'fromResults', false);
+        setupAutocomplete('toInput', 'toResults', true);
 
     </script>
 @endsection
