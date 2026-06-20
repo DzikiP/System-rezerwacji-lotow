@@ -12,7 +12,7 @@ System umożliwia rezerwację lotów przez użytkowników.
 ## Technologie
 - Laravel
 - PostgreSQL
-- Render
+- Railway
 
 ## Dokumentacja
-/docs/projekt.md
+/docs/dokumentacja.md
