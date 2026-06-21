@@ -773,3 +773,180 @@ public function test_user_bookings_relationship(): void
 ```
 ### Wynik testów integracyjnych
 ![wynik testów integracyjnych](docs/images/TestyIntegracyjne.png)
+
+#Dokumentacja techniczna
+
+## Instalacja i konfiguracja:
+
+### Continuous Integration i Continuous Deployment (CI/CD)
+
+Projekt wykorzystuje GitHub Actions do automatycznego uruchamiania procesu Continuous Integration. Po każdym przesłaniu zmian do gałęzi `main` wykonywane są testy jednostkowe i integracyjne.
+
+Platforma Railway została skonfigurowana z opcją **Wait for CI**, dzięki czemu nowe wdrożenie następuje wyłącznie po pomyślnym zakończeniu wszystkich zadań GitHub Actions. W przypadku niepowodzenia testów proces wdrożenia zostaje automatycznie wstrzymany.
+
+Takie rozwiązanie zapewnia, że na środowisko produkcyjne trafiają jedynie poprawnie zweryfikowane wersje aplikacji.
+
+## Implementacja zaplanowanych mechanizmów zapewniających bezpieczeństwo w praktyce
+
+W projekcie zastosowano szereg mechanizmów bezpieczeństwa zgodnych z podejściami Secure by Design, Zero Trust oraz Privacy by Design.
+
+### 1. Bezpieczeństwo danych w tranzycie i spoczynku
+- Cała komunikacja z aplikacją odbywa się przez protokół HTTPS.
+- Dane przesyłane pomiędzy klientem a serwerem są szyfrowane.
+- Hasła użytkowników są przechowywane w formie haszowanej (bcrypt).
+
+### 2. Autoryzacja i uwierzytelnianie
+- System wykorzystuje mechanizm logowania oparty o Laravel Authentication.
+- Dostęp do zasobów jest kontrolowany przez role użytkowników (np. administrator, użytkownik).
+- Zastosowano zasadę najmniejszych uprawnień (Least Privilege).
+
+### 3. Ochrona przed atakami
+- Laravel automatycznie zabezpiecza aplikację przed SQL Injection poprzez ORM Eloquent.
+- Zastosowano ochronę CSRF dla formularzy.
+- Walidacja danych wejściowych odbywa się po stronie serwera.
+
+### 4. Bezpieczeństwo infrastruktury
+- Środowisko produkcyjne hostowane jest na platformie Railway.
+- Dane konfiguracyjne (np. dostęp do bazy danych) przechowywane są w zmiennych środowiskowych, a nie w kodzie źródłowym.
+- Dostęp do bazy danych jest ograniczony tylko do usług wewnętrznych aplikacji.
+
+### 5. CI/CD i bezpieczeństwo wdrożeń
+- Wdrożenie aplikacji następuje wyłącznie po pomyślnym przejściu testów w GitHub Actions.
+- Każda zmiana w gałęzi `main` przechodzi proces weryfikacji (Continuous Integration).
+- Mechanizm Railway "Wait for CI" blokuje wdrożenie w przypadku błędów testów.
+
+### 6. Ochrona danych użytkownika (Privacy by Design)
+- System minimalizuje zakres przetwarzanych danych osobowych.
+- Dane użytkowników są wykorzystywane wyłącznie w zakresie niezbędnym do realizacji rezerwacji.
+- Brak przechowywania danych kart płatniczych w systemie.
+
+# Dokumentacja użytkownika
+
+## Spis treści
+
+1. Wprowadzenie
+2. Rejestracja i logowanie
+3. Wyszukiwanie lotów
+4. Proces rezerwacji lotu 
+5. Zarządzanie rezerwacjami
+6. Płatności
+7. Generowanie biletu PDF
+8. Panel użytkownika
+9. Rozwiązywanie problemów
+
+---
+
+## 1. Wprowadzenie
+
+System rezerwacji lotów umożliwia wyszukiwanie dostępnych połączeń lotniczych, tworzenie rezerwacji, zarządzanie pasażerami oraz generowanie biletów elektronicznych.
+
+Aplikacja działa w przeglądarce internetowej i nie wymaga instalacji dodatkowego oprogramowania.
+
+---
+
+## 2. Rejestracja i logowanie
+
+Użytkownik może założyć konto poprzez formularz rejestracyjny, podając:
+- imię i nazwisko,
+- adres e-mail,
+- hasło.
+
+Po rejestracji możliwe jest logowanie do systemu przy użyciu adresu e-mail i hasła.
+
+---
+
+## 3. Wyszukiwanie lotów
+
+System umożliwia wyszukiwanie lotów na podstawie:
+- lotniska wylotu,
+- lotniska przylotu,
+- daty podróży,
+- liczby pasażerów.
+
+Wyniki można filtrować oraz sortować według ceny i czasu lotu.
+
+---
+
+# 4. Proces rezerwacji lotu 
+
+Proces rezerwacji rozpoczyna się po wybraniu konkretnego lotu z listy wyników wyszukiwania.
+
+### Krok 1 – wybór lotu
+Użytkownik klika przycisk „Zarezerwuj”, aby przejść do formularza rezerwacji.
+
+### Krok 2 – dane pasażerów
+Użytkownik wprowadza dane każdego pasażera:
+- imię i nazwisko,
+- data urodzenia,
+- obywatelstwo,
+- numer dokumentu.
+
+System umożliwia dodanie wielu pasażerów w jednej rezerwacji.
+
+### Krok 3 – dane kontaktowe
+Wymagane jest podanie:
+- adresu e-mail,
+- numeru telefonu.
+
+### Krok 4 – podsumowanie
+System wyświetla:
+- szczegóły lotu,
+- listę pasażerów,
+- całkowity koszt rezerwacji.
+
+### Krok 5 – potwierdzenie
+Użytkownik zatwierdza rezerwację i przechodzi do płatności.
+
+---
+
+# 5. Zarządzanie rezerwacjami 
+
+W panelu użytkownika dostępna jest lista wszystkich rezerwacji.
+
+### Dostępne operacje:
+- podgląd szczegółów rezerwacji,
+- anulowanie rezerwacji,
+- sprawdzenie statusu płatności,
+- pobranie biletu PDF.
+
+### Statusy rezerwacji:
+- `pending` – oczekuje,
+- `awaiting_payment` – oczekuje na płatność,
+- `paid` – opłacona,
+- `cancelled` – anulowana.
+
+### Anulowanie rezerwacji
+Użytkownik może anulować rezerwację, jeśli nie została jeszcze wykorzystana. System może naliczyć opłatę zgodnie z warunkami taryfy.
+
+---
+
+## 6. Płatności
+
+System obsługuje proces płatności dla rezerwacji. Po dokonaniu płatności status rezerwacji zmienia się na `paid`.
+
+---
+
+## 7. Generowanie biletu PDF
+
+Po opłaceniu rezerwacji użytkownik może wygenerować bilet w formacie PDF zawierający:
+- dane pasażera,
+- numer rezerwacji,
+- szczegóły lotu.
+
+---
+
+## 8. Panel użytkownika
+
+Panel użytkownika umożliwia:
+- edycję danych konta,
+- przegląd historii rezerwacji,
+- pobieranie dokumentów.
+
+---
+
+## 9. Rozwiązywanie problemów
+
+W przypadku problemów:
+- sprawdź poprawność danych logowania,
+- upewnij się, że rezerwacja została opłacona,
+- odśwież stronę lub spróbuj ponownie później.

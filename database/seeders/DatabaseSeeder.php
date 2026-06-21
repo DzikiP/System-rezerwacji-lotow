@@ -80,28 +80,6 @@ class DatabaseSeeder extends Seeder
                     ->create([
                         'booking_id' => $booking->id
                     ]);
-
-                // =========================
-                // PAYMENT
-                // =========================
-                $payment = Payment::factory()->create([
-                    'booking_id' => $booking->id,
-                    'status' => fake()->randomElement(['pending', 'paid'])
-                ]);
-
-                // =========================
-                // TICKET
-                // =========================
-                if ($payment->status === 'paid') {
-
-                    Ticket::factory()->create([
-                        'booking_id' => $booking->id,
-                    ]);
-
-                    $booking->update([
-                        'status' => 'paid'
-                    ]);
-                }
             });
     }
 }

@@ -12,61 +12,46 @@
                 <p class="text-gray-400 mt-2">Review flight details and add passengers</p>
             </div>
 
-            @php
-                $segment = $flight['flights'][0] ?? null;
-            @endphp
-
-                <!-- FLIGHT SUMMARY -->
+            <!-- FLIGHT SUMMARY -->
             <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 mb-10">
 
-                @if($segment)
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
 
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                    <div>
+                        <p class="text-gray-400 text-sm">Airline</p>
+                        <p class="text-xl font-semibold">{{ $flight['airline'] ?? 'Unknown' }}</p>
 
-                        <!-- LEFT -->
-                        <div>
-                            <p class="text-gray-400 text-sm">Airline</p>
-                            <p class="text-xl font-semibold">
-                                {{ $segment['airline'] ?? 'Unknown' }}
-                            </p>
-
-                            <p class="text-gray-500 text-sm mt-2">
-                                Flight {{ $segment['flight_number'] ?? '-' }}
-                            </p>
-                        </div>
-
-                        <!-- CENTER ROUTE -->
-                        <div class="text-center">
-                            <div class="text-2xl font-bold tracking-wide">
-                                {{ $segment['departure_airport']['id'] ?? '---' }}
-                                <span class="text-gray-500">→</span>
-                                {{ $segment['arrival_airport']['id'] ?? '---' }}
-                            </div>
-
-                            <div class="text-gray-400 text-sm mt-2">
-                                {{ \Carbon\Carbon::parse($segment['departure_airport']['time'] ?? now())->format('d M Y • H:i') }}
-                            </div>
-                        </div>
-
-                        <!-- RIGHT PRICE -->
-                        <div class="text-right">
-                            <p class="text-gray-400 text-sm">Price per passenger</p>
-                            <p class="text-3xl font-bold text-blue-400">
-                                {{ number_format($flight['price'] ?? 0) }} PLN
-                            </p>
-                        </div>
-
+                        <p class="text-gray-500 text-sm mt-2">
+                            Flight {{ $flight['flight_number'] ?? '-' }}
+                        </p>
                     </div>
 
-                @else
-                    <p class="text-gray-400">Flight data not available</p>
-                @endif
+                    <div class="text-center">
+                        <div class="text-2xl font-bold tracking-wide">
+                            {{ $flight['from'] ?? '---' }}
+                            <span class="text-gray-500">→</span>
+                            {{ $flight['to'] ?? '---' }}
+                        </div>
+
+                        <div class="text-gray-400 text-sm mt-2">
+                            {{ \Carbon\Carbon::parse($flight['departure_time'] ?? now())->format('d M Y • H:i') }}
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <p class="text-gray-400 text-sm">Price per passenger</p>
+                        <p class="text-3xl font-bold text-blue-400">
+                            {{ number_format($flight['price'] ?? 0) }} PLN
+                        </p>
+                    </div>
+
+                </div>
 
             </div>
 
+
             <!-- FORM -->
             <form method="POST" action="{{ route('bookings.store') }}" class="space-y-8">
-
                 @csrf
 
                 <input type="hidden" name="flight_index" value="{{ $index }}">
@@ -84,7 +69,88 @@
                         </button>
                     </div>
 
-                    <div id="passengers" class="space-y-6"></div>
+                    <div id="passengers" class="space-y-6">
+
+                        @php
+                            $firstId = 'INIT-' . uniqid();
+                            $errorsBag = $errors->getMessages();
+                        @endphp
+
+                        <div class="bg-gray-800 p-6 rounded-2xl space-y-4">
+
+                            <input type="hidden" name="passengers[{{ $firstId }}][id]" value="{{ $firstId }}">
+
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold">Passenger</h3>
+                            </div>
+
+                            <input name="passengers[{{ $firstId }}][first_name]"
+                                   placeholder="First name"
+                                   class="w-full p-3 bg-gray-900 rounded-xl">
+
+                            @foreach ($errorsBag as $key => $messages)
+                                @if (str_ends_with($key, 'first_name'))
+                                    <p class="text-red-400 text-sm mt-1">{{ $messages[0] }}</p>
+                                    @break
+                                @endif
+                            @endforeach
+
+                            <input name="passengers[{{ $firstId }}][last_name]"
+                                   placeholder="Last name"
+                                   class="w-full p-3 bg-gray-900 rounded-xl">
+
+                            @foreach ($errorsBag as $key => $messages)
+                                @if (str_ends_with($key, 'last_name'))
+                                    <p class="text-red-400 text-sm mt-1">{{ $messages[0] }}</p>
+                                    @break
+                                @endif
+                            @endforeach
+
+                            <input type="date"
+                                   name="passengers[{{ $firstId }}][birth_date]"
+                                   class="w-full p-3 bg-gray-900 rounded-xl">
+
+                            @foreach ($errorsBag as $key => $messages)
+                                @if (str_ends_with($key, 'birth_date'))
+                                    <p class="text-red-400 text-sm mt-1">{{ $messages[0] }}</p>
+                                    @break
+                                @endif
+                            @endforeach
+
+                            <input name="passengers[{{ $firstId }}][nationality]"
+                                   placeholder="Nationality"
+                                   class="w-full p-3 bg-gray-900 rounded-xl">
+
+                            @foreach ($errorsBag as $key => $messages)
+                                @if (str_ends_with($key, 'nationality'))
+                                    <p class="text-red-400 text-sm mt-1">{{ $messages[0] }}</p>
+                                    @break
+                                @endif
+                            @endforeach
+
+                            <input name="passengers[{{ $firstId }}][document_number]"
+                                   placeholder="Document number"
+                                   class="w-full p-3 bg-gray-900 rounded-xl">
+
+                            @foreach ($errorsBag as $key => $messages)
+                                @if (str_ends_with($key, 'document_number'))
+                                    <p class="text-red-400 text-sm mt-1">{{ $messages[0] }}</p>
+                                    @break
+                                @endif
+                            @endforeach
+
+                            <select name="passengers[{{ $firstId }}][passenger_type]"
+                                    class="w-full p-3 bg-gray-900 rounded-xl">
+
+                                <option value="adult">Adult</option>
+                                <option value="child">Child</option>
+                                <option value="infant">Infant</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -105,78 +171,66 @@
 @section('scripts')
 
     <script>
-        let i = 0;
-
         function addPassenger() {
 
             const container = document.getElementById('passengers');
+            const id = crypto.randomUUID();
 
             const div = document.createElement('div');
-            div.className = "bg-gray-800 p-6 rounded-2xl space-y-3";
+            div.className = "bg-gray-800 p-6 rounded-2xl space-y-4";
 
             div.innerHTML = `
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold">Passenger</h3>
+        <div class="flex justify-between items-center">
+            <h3 class="font-bold">Passenger</h3>
 
-                <button type="button"
-                        class="text-red-400"
-                        onclick="removePassenger(this)">
-                    Remove
-                </button>
-            </div>
+            <button type="button"
+                    class="text-red-400"
+                    onclick="removePassenger(this)">
+                Remove
+            </button>
+        </div>
 
-            <input name="passengers[${i}][first_name]" placeholder="First name"
-                   class="w-full p-3 bg-gray-900 rounded-xl">
+        <input name="passengers[${id}][first_name]"
+               placeholder="First name"
+               class="w-full p-3 bg-gray-900 rounded-xl">
 
-            <input name="passengers[${i}][last_name]" placeholder="Last name"
-                   class="w-full p-3 bg-gray-900 rounded-xl">
+        <input name="passengers[${id}][last_name]"
+               placeholder="Last name"
+               class="w-full p-3 bg-gray-900 rounded-xl">
 
-            <input type="date" name="passengers[${i}][birth_date]"
-                   class="w-full p-3 bg-gray-900 rounded-xl">
+        <input type="date"
+               name="passengers[${id}][birth_date]"
+               class="w-full p-3 bg-gray-900 rounded-xl">
 
-            <input name="passengers[${i}][nationality]" placeholder="Nationality"
-                   class="w-full p-3 bg-gray-900 rounded-xl">
+        <input name="passengers[${id}][nationality]"
+               placeholder="Nationality"
+               class="w-full p-3 bg-gray-900 rounded-xl">
 
-            <input name="passengers[${i}][document_number]" placeholder="Document number"
-                   class="w-full p-3 bg-gray-900 rounded-xl">
+        <input name="passengers[${id}][document_number]"
+               placeholder="Document number"
+               class="w-full p-3 bg-gray-900 rounded-xl">
 
-            <select name="passengers[${i}][passenger_type]"
-                    class="w-full p-3 bg-gray-900 rounded-xl">
+        <select name="passengers[${id}][passenger_type]"
+                class="w-full p-3 bg-gray-900 rounded-xl">
 
-                <option value="adult">Adult</option>
-                <option value="child">Child</option>
-                <option value="infant">Infant</option>
+            <option value="adult">Adult</option>
+            <option value="child">Child</option>
+            <option value="infant">Infant</option>
 
-            </select>
-        `;
+        </select>
+    `;
 
             container.appendChild(div);
-            i++;
         }
 
         function removePassenger(btn) {
             const container = document.getElementById('passengers');
-
-            if (container.children.length === 1) {
-                alert("At least one passenger is required");
-                return;
-            }
-
             btn.closest('.bg-gray-800').remove();
-        }
 
-        document.querySelector('form').addEventListener('submit', (e) => {
-            const passengers = document.querySelectorAll('#passengers > div');
-
-            if (passengers.length === 0) {
-                e.preventDefault();
-                alert('Add at least one passenger');
+            if (container.children.length === 0) {
+                location.reload();
             }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            addPassenger();
-        });
+        }
     </script>
 
 @endsection

@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Enums\BookingStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Http\Requests\StoreBookingRequest;
 
 class BookingController extends Controller
 {
@@ -41,7 +42,7 @@ class BookingController extends Controller
     /**
      * STORE booking
      */
-    public function store(Request $request)
+    public function store(StoreBookingRequest $request)
     {
         $request->validate([
             'flight_index' => 'required|integer',

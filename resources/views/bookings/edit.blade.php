@@ -26,54 +26,39 @@
 
             </div>
 
-            <!-- FLIGHT INFO -->
             <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 mb-10">
 
-                <h2 class="text-2xl font-bold mb-6">Flight (read-only)</h2>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
 
-                @php
-                    $segment = $flight['flights'][0] ?? null;
-                @endphp
+                    <div>
+                        <p class="text-gray-400 text-sm">Airline</p>
+                        <p class="text-xl font-semibold">{{ $flight['airline'] ?? 'Unknown' }}</p>
 
-                @if($segment)
-
-                    <div class="grid grid-cols-2 gap-6 text-gray-300">
-
-                        <div>
-                            <p class="text-gray-400">Airline</p>
-                            <p class="text-xl font-semibold">
-                                {{ $segment['airline'] ?? 'Unknown' }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-gray-400">Route</p>
-                            <p class="text-xl font-semibold">
-                                {{ $segment['departure_airport']['id'] ?? '' }}
-                                →
-                                {{ $segment['arrival_airport']['id'] ?? '' }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-gray-400">Departure</p>
-                            <p class="text-xl font-semibold">
-                                {{ \Carbon\Carbon::parse($segment['departure_airport']['time'] ?? now())->format('d M Y H:i') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-gray-400">Price per passenger</p>
-                            <p class="text-xl font-semibold">
-                                {{ number_format($flight['price'] ?? 0) }} PLN
-                            </p>
-                        </div>
-
+                        <p class="text-gray-500 text-sm mt-2">
+                            Flight {{ $flight['flight_number'] ?? '-' }}
+                        </p>
                     </div>
 
-                @else
-                    <p class="text-gray-400">Flight data not available</p>
-                @endif
+                    <div class="text-center">
+                        <div class="text-2xl font-bold tracking-wide">
+                            {{ $flight['from'] ?? '---' }}
+                            <span class="text-gray-500">→</span>
+                            {{ $flight['to'] ?? '---' }}
+                        </div>
+
+                        <div class="text-gray-400 text-sm mt-2">
+                            {{ \Carbon\Carbon::parse($flight['departure_time'] ?? now())->format('d M Y • H:i') }}
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <p class="text-gray-400 text-sm">Price per passenger</p>
+                        <p class="text-3xl font-bold text-blue-400">
+                            {{ number_format($flight['price'] ?? 0) }} PLN
+                        </p>
+                    </div>
+
+                </div>
 
             </div>
 

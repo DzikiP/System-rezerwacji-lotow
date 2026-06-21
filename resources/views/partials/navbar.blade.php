@@ -14,17 +14,11 @@
             <nav class="hidden md:flex items-center gap-8">
 
                 <a href="{{ url('/') }}"
-                   class="{{ request()->is('/') ? 'text-white' : 'text-gray-300' }} hover:text-white transition">
+                   class="{{ request()->is('/') ? 'text-white' : 'text-gray-300' }}  transition hover:text-blue-400">
                     Home
                 </a>
 
-                <a href="#"
-                   class="text-gray-300 hover:text-white transition">
-                    Destinations
-                </a>
-
-                <a href="#"
-                   class="text-gray-300 hover:text-white transition">
+                <a href="{{ route('about') }}" class="{{ request()->is('/') ? 'text-white' : 'text-gray-300' }}  transition hover:text-blue-400">
                     About
                 </a>
 

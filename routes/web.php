@@ -5,9 +5,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TicketController;
 
 
 Route::get('/', [FlightController::class, 'home'])->name('home');
+
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
 
 // AUTH
 Route::middleware('guest')->group(function () {
@@ -54,3 +60,15 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 });
+
+// Payments
+
+Route::get('/bookings/{booking}/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+Route::post('/bookings/{booking}/pay', [PaymentController::class, 'pay'])->name('pay');
+
+Route::get('/payment/success/{booking}', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/fail/{booking}', [PaymentController::class, 'fail'])->name('payment.fail');
+
+//Ticket
+Route::get('/bookings/{booking}/ticket', [TicketController::class, 'generate'])
+    ->name('ticket.generate');

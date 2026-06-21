@@ -6,7 +6,11 @@
 
         <div class="container mx-auto max-w-5xl px-6">
 
-            <!-- HEADER -->
+            @php
+                $payment = $booking->payment;
+            @endphp
+
+                <!-- HEADER -->
             <div class="flex justify-between items-start mb-10">
 
                 <div>
@@ -15,10 +19,19 @@
                     </h1>
 
                     <div class="mt-3">
-                    <span class="px-4 py-1 rounded-full text-sm bg-gray-800 {{ $booking->status->color() }}">
-                        {{ $booking->status->label() }}
-                    </span>
+                        <span class="px-4 py-1 rounded-full text-sm bg-gray-800 {{ $booking->status->color() }}">
+                            {{ $booking->status->label() }}
+                        </span>
                     </div>
+
+                    @if($payment)
+                        <div class="mt-3 text-sm text-gray-400">
+                            Payment:
+                            <span class="{{ $payment->status === 'paid' ? 'text-green-400' : 'text-yellow-400' }}">
+                                {{ ucfirst($payment->status) }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="text-right">
@@ -38,15 +51,36 @@
                         Edit booking
                     </a>
 
+                    {{-- PAYMENT BUTTON --}}
+                    @if(!$payment || $payment->status !== 'paid')
+                        <a href="{{ route('checkout', $booking) }}"
+                           class="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-xl text-sm font-semibold">
+                            Pay now
+                        </a>
+                    @else
+                        <div class="bg-green-800 text-green-300 px-5 py-2 rounded-xl text-sm font-semibold">
+                            Paid
+                        </div>
+                    @endif
+
+                    {{-- TICKET BUTTON --}}
+                    @if($payment && $payment->status === 'paid')
+                        <a href="{{ route('ticket.generate', $booking) }}"
+                           class="bg-purple-600 hover:bg-purple-700 px-5 py-2 rounded-xl text-sm font-semibold">
+                            Generate ticket (PDF)
+                        </a>
+                    @endif
+
                 </div>
+
+
 
             </div>
 
-                <!-- FLIGHT CARD -->
+            <!-- FLIGHT CARD -->
             @php
                 $flight = $booking->flight_data;
             @endphp
-
 
             @if($flight)
 
@@ -78,8 +112,8 @@
                                 <div class="text-gray-400 text-sm mt-2">
                                     Aircraft:
                                     <span class="text-white">
-                        {{ $flight['airplane'] ?? 'N/A' }}
-                    </span>
+                                        {{ $flight['airplane'] ?? 'N/A' }}
+                                    </span>
                                 </div>
                             </div>
 

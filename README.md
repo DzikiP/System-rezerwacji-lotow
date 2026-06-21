@@ -4,7 +4,7 @@ Projekt realizowany w ramach przedmiotu Projekt Systemu.
 
 ## Autorzy
 - Patryk Dziki
-- Denis Stefański
+- ~~Denis Stefański~~
 
 ## Opis
 System umożliwia rezerwację lotów przez użytkowników.
@@ -16,3 +16,5 @@ System umożliwia rezerwację lotów przez użytkowników.
 
 ## Dokumentacja
 /docs/dokumentacja.md
+
+## Instrkukcja 

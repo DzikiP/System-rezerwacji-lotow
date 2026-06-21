@@ -12,23 +12,27 @@ return new class extends Migration {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('booking_id')->constrained('bookings');
+            $table->foreignId('booking_id')
+                ->constrained('bookings')
+                ->cascadeOnDelete();
 
             $table->string('provider')->default('p24');
 
-            $table->string('session_id')->nullable();
+            $table->string('gateway_session_id')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('p24_order_id')->nullable();
 
             $table->decimal('amount', 10, 2);
             $table->string('currency', 3)->default('PLN');
 
-            $table->string('status')->default('pending');
-            // pending, paid, failed, refunded
+            $table->enum('status', ['pending', 'paid', 'failed', 'refunded'])
+                ->default('pending');
 
-            $table->dateTime('paid_at')->nullable();
+            $table->timestamp('paid_at')->nullable();
 
             $table->timestamps();
+
+            $table->index(['status', 'provider']);
         });
     }
 
