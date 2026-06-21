@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <title>{{ config('app.name', 'SkyBook') }}</title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-950 text-white min-h-screen flex flex-col">
+
+    @include('partials.navbar')
+
+    <main class="flex-grow pt-20">
+        @yield('content')
+    </main>
+
+    @include('partials.footer')
+
+    @yield('scripts')
+</body>
+</html>
