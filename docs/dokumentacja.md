@@ -1,3 +1,36 @@
+---
+title: "Dokumentacja projektu"
+subtitle: "System Rezerwacji Lotów"
+author:
+  - Patryk Dziki
+date: \today
+toc: true
+numbersections: true
+---
+
+<div align="center">
+
+# **System Rezerwacji Lotów**
+
+## Dokumentacja projektu
+
+**Kierunek:** Informatyka
+
+**Przedmiot:** *Nazwa przedmiotu*
+
+**Autorzy:**
+
+Patryk Dziki
+
+**Repozytorium projektu:**
+
+https://github.com/DzikiP/System-rezerwacji-lotow
+
+**Wersja dokumentu:** 1.0
+
+**Data:** 21.06.2026
+
+</div>
 # Dokumentacja projektu
 
 ## Spis treści
