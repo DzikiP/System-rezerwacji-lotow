@@ -1,0 +1,86 @@
+CREATE TABLE public.airports (
+    id bigint NOT NULL,
+    iata character varying(255),
+    icao character varying(255),
+    name character varying(255) NOT NULL,
+    city character varying(255),
+    country character varying(255),
+    latitude numeric(10,7),
+    longitude numeric(10,7),
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+CREATE TABLE public.roles (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+REATE TABLE public.bookings (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    booking_reference character varying(255) NOT NULL,
+    status character varying(255) DEFAULT 'pending'::character varying NOT NULL,
+    passengers_count integer NOT NULL,
+    total_price numeric(10,2) NOT NULL,
+    currency character varying(3) DEFAULT 'USD'::character varying NOT NULL,
+    flight_data json,
+    expires_at timestamp(0) without time zone,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+CREATE TABLE public.passengers (
+    id bigint NOT NULL,
+    booking_id bigint NOT NULL,
+    first_name character varying(255) NOT NULL,
+    last_name character varying(255) NOT NULL,
+    birth_date date NOT NULL,
+    nationality character varying(255) NOT NULL,
+    document_number character varying(255) NOT NULL,
+    passenger_type character varying(255) NOT NULL,
+    seat_number character varying(255),
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+CREATE TABLE public.payments (
+    id bigint NOT NULL,
+    booking_id bigint NOT NULL,
+    provider character varying(255) DEFAULT 'p24'::character varying NOT NULL,
+    gateway_session_id character varying(255),
+    transaction_id character varying(255),
+    p24_order_id character varying(255),
+    amount numeric(10,2) NOT NULL,
+    currency character varying(3) DEFAULT 'PLN'::character varying NOT NULL,
+    status character varying(255) DEFAULT 'pending'::character varying NOT NULL,
+    paid_at timestamp(0) without time zone,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone,
+    CONSTRAINT payments_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'paid'::character varying, 'failed'::character varying, 'refunded'::character varying])::text[])))
+);
+
+CREATE TABLE public.tickets (
+    id bigint NOT NULL,
+    booking_id bigint NOT NULL,
+    ticket_number character varying(255) NOT NULL,
+    pdf_path character varying(255) NOT NULL,
+    issued_at timestamp(0) without time zone,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    role_id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    email_verified_at timestamp(0) without time zone,
+    password character varying(255) NOT NULL,
+    phone character varying(255),
+    remember_token character varying(100),
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
