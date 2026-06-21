@@ -20,7 +20,7 @@
 
             <div class="max-w-3xl">
                 <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6">
-                    Discover The World With Comfort
+                    Discover The World With Comfort!
                 </h1>
 
                 <p class="text-lg text-gray-300 mb-10">

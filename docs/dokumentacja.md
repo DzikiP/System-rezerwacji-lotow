@@ -1,66 +1,30 @@
-# Dokumentacja projektu
+<div align="center">
 
-## Spis treści
+# **System Rezerwacji Lotów**
 
-1. Strona tytułowa
-2. Słownik
-3. Cel i zakres projektu
-4. Architektura systemu
-5. Wymagania
-    - 5.1 Wymagania funkcjonalne
-    - 5.2 Wymagania niefunkcjonalne
-6. Ograniczenia
+## Dokumentacja projektu
 
-### Dokumentacja projektowa
+**Kierunek:** Informatyka
 
-7. Użytkownicy
-8. Przypadki użycia
-9. Baza danych
-10. Diagramy sekwencji
-11. Diagramy aktywności
-12. Diagramy stanów
-13. Dokumentacja bezpieczeństwa
-14. Dostępność (WCAG)
-
-### Dokumentacja deweloperska
-
-15. Diagram klas
-16. Kod SQL
-17. Przypadki testowe
-18. Testy jednostkowe
-
-### Dokumentacja techniczna
-
-19. Diagram komponentów i wdrożenia
-20. Instalacja i konfiguracja
-21. Implementacja mechanizmów bezpieczeństwa
-
-### Dokumentacja użytkownika
-
-22. Podręcznik użytkownika
-
-# System Rezerwacji Lotów
-
-**Nazwa projektu:** System Rezerwacji Lotów
-
-**Skrót projektu:** FlightBookingSystem
+**Przedmiot:** *Nazwa przedmiotu*
 
 **Autorzy:**
-- Patryk
-- Denis Stefański
+
+Patryk Dziki
 
 **Repozytorium projektu:**
 https://github.com/DzikiP/System-rezerwacji-lotow
 
-**Technologie:**
-- Laravel 12
-- PHP 8.2
-- PostgreSQL
-- Blade
-- Tailwind CSS
-- Docker
+**Strona Live**
+https://system-rezerwacji-lotow-production.up.railway.app
 
-## 2. Słownik
+**Wersja dokumentu:** 1.0
+
+**Data:** 21.06.2026
+
+</div>
+
+# 1. Słownik
 
 Poniżej przedstawiono podstawowe pojęcia używane w dokumentacji oraz w systemie.
 
@@ -109,17 +73,45 @@ Narzędzie do konteneryzacji aplikacji, umożliwiające jej uruchamianie w izolo
 ### Railway
 Platforma chmurowa wykorzystywana do wdrożenia (deploymentu) aplikacji.
 
-# 1. Wstęp
+# Wstęp
 
-## 1.1 Cel projektu
+## Cel projektu
 
 Celem projektu jest zaprojektowanie i implementacja aplikacji internetowej umożliwiającej wyszukiwanie połączeń lotniczych oraz zarządzanie rezerwacjami biletów lotniczych.
 
 System umożliwia użytkownikom przeglądanie dostępnych lotów, ich wyszukiwanie na podstawie określonych parametrów oraz tworzenie i zarządzanie rezerwacjami.
 
 ---
+## Zakres projektu
 
-## 1.2 Przyczyna podjęcia realizacji projektu
+Projekt obejmuje zaprojektowanie i implementację internetowego systemu rezerwacji lotów. System umożliwia użytkownikom wyszukiwanie połączeń lotniczych, przeglądanie dostępnych lotów oraz dokonywanie rezerwacji miejsc.
+
+W ramach projektu zostaną zaimplementowane następujące funkcjonalności:
+
+- rejestracja i logowanie użytkowników
+- wyszukiwanie lotów na podstawie parametrów
+- przegląd wyników wyszukiwania lotów
+- tworzenie rezerwacji wraz z danymi pasażerów
+- symulacja procesu płatności 
+- generowanie biletu w formacie PDF
+- panel użytkownika z historią rezerwacji
+- podstawowa administracja danymi
+
+System zostanie zrealizowany jako aplikacja webowa oparta o framework Laravel z relacyjną bazą danych.
+
+---
+
+## Odbiorca docelowy
+
+Docelową grupą użytkowników systemu są:
+
+- osoby prywatne planujące podróże lotnicze i chcące szybko znaleźć oraz zarezerwować bilety
+- studenci i użytkownicy testowi (w kontekście projektu akademickiego)
+- potencjalnie małe biura podróży lub symulacyjne systemy rezerwacyjne
+
+System jest skierowany do użytkowników końcowych o podstawowej znajomości obsługi aplikacji webowych — nie wymaga wiedzy technicznej.
+
+## Przyczyna podjęcia realizacji projektu
 
 Główną przyczyną realizacji projektu jest potrzeba informatyzacji procesu wyszukiwania i rezerwacji lotów.
 
@@ -132,7 +124,7 @@ Współczesne systemy rezerwacyjne wymagają szybkiego dostępu do danych oraz i
 
 ---
 
-## 1.3 Opis oprogramowania
+## Opis oprogramowania
 
 Oprogramowanie realizuje proces wyszukiwania oraz rezerwacji lotów.
 
@@ -149,20 +141,20 @@ System przechowuje dane użytkowników oraz rezerwacji w relacyjnej bazie danych
 
 ---
 
-## 1.4 Ograniczenia
+## Ograniczenia
 
-* Aplikacja działa wyłącznie w przeglądarce internetowej  
-* System wymaga aktywnego połączenia z Internetem  
-* Dane o lotach zależą od dostępności zewnętrznego API  
-* Brak integracji z systemami płatności online  
-* System nie gwarantuje rzeczywistej dostępności miejsc w czasie rzeczywistym  
-* Aplikacja została zaprojektowana w architekturze MVC (Laravel)  
-* System działa w środowisku PHP 8.2  
+* Aplikacja działa wyłącznie w przeglądarce internetowej
+* System wymaga aktywnego połączenia z Internetem
+* Dane o lotach zależą od dostępności zewnętrznego API
+* Brak integracji z systemami płatności online
+* System nie gwarantuje rzeczywistej dostępności miejsc w czasie rzeczywistym
+* Aplikacja została zaprojektowana w architekturze MVC (Laravel)
+* System działa w środowisku PHP 8.2
 * Wymagana baza danych: PostgreSQL
 
 ---
 
-## 1.5 Architektura
+## Architektura
 
 Aplikacja została zbudowana w oparciu o architekturę MVC (Model–View–Controller).
 
@@ -174,17 +166,8 @@ System składa się z następujących warstw:
 - **Warstwa zewnętrznych usług (API)** – integracja z zewnętrznym API lotów
 - **Warstwa bazy danych** – PostgreSQL przechowujący dane użytkowników i rezerwacji
 
----
 
-## 1.6 Link do działającej aplikacji
-
-Aplikacja działająca: *system-rezerwacji-lotow-production.up.railway.app*
-
-:contentReference[oaicite:0]{index=0}
-
----
-
-# 2. Wymagania funkcjonalne
+# Wymagania funkcjonalne
 
 - System umożliwia wyszukiwanie dostępnych lotów na podstawie miejsca wylotu, miejsca docelowego oraz daty.
 - System umożliwia przeglądanie wyników wyszukiwania lotów przez użytkowników niezalogowanych.
@@ -199,12 +182,12 @@ Aplikacja działająca: *system-rezerwacji-lotow-production.up.railway.app*
 
 ---
 
-# 3. Wymagania niefunkcjonalne
+# Wymagania niefunkcjonalne
 
 ## Interfejs
 
 - Aplikacja działa jako strona internetowa (web application).
-- Interfejs użytkownika jest responsywny (RWD).
+- Interfejs użytkownika jest responsywny.
 - Interfejs został wykonany z użyciem Tailwind CSS.
 - System zapewnia spójny wygląd wszystkich widoków.
 
@@ -246,12 +229,12 @@ Niezalogowany użytkownik systemu. Może przeglądać oraz wyszukiwać loty, ale
 ### Użytkownik (User)
 Zalogowany użytkownik systemu. Może wyszukiwać loty, tworzyć rezerwacje oraz zarządzać swoimi rezerwacjami.
 
-### Administrator (opcjonalnie – jeśli masz)
+### Administrator
 Użytkownik posiadający pełne uprawnienia do zarządzania systemem, użytkownikami oraz rezerwacjami.
 
 ---
 
-## 4.2 Przypadki użycia
+## Przypadki użycia
 
 System umożliwia realizację procesów związanych z wyszukiwaniem lotów oraz zarządzaniem rezerwacjami.
 
@@ -263,18 +246,18 @@ System umożliwia realizację procesów związanych z wyszukiwaniem lotów oraz 
 
 W systemie zidentyfikowano następujące przypadki użycia:
 
-| ID | Przypadek użycia | Aktor |
-|----|------------------|--------|
-| UC-01 | Rejestracja użytkownika | Gość |
-| UC-02 | Logowanie do systemu | Użytkownik |
-| UC-03 | Wylogowanie z systemu | Użytkownik |
-| UC-04 | Wyszukiwanie lotów | Gość, Użytkownik |
-| UC-05 | Wyświetlenie szczegółów lotu | Gość, Użytkownik |
-| UC-06 | Utworzenie rezerwacji lotu | Użytkownik |
-| UC-07 | Wyświetlenie listy rezerwacji | Użytkownik |
-| UC-08 | Edycja rezerwacji | Użytkownik |
-| UC-09 | Usunięcie (anulowanie) rezerwacji | Użytkownik |
-| UC-10 | Zarządzanie kontem użytkownika | Użytkownik |
+ Przypadek użycia | Aktor |
+------------------|--------|
+ Rejestracja użytkownika | Gość |
+ Logowanie do systemu | Użytkownik |
+ Wylogowanie z systemu | Użytkownik |
+ Wyszukiwanie lotów | Gość, Użytkownik |
+ Wyświetlenie szczegółów lotu | Gość, Użytkownik |
+ Utworzenie rezerwacji lotu | Użytkownik |
+ Wyświetlenie listy rezerwacji | Użytkownik |
+ Edycja rezerwacji | Użytkownik |
+ Usunięcie (anulowanie) rezerwacji | Użytkownik |
+ Zarządzanie kontem użytkownika | Użytkownik |
 
 ## Diagram przypadków użycia
 
@@ -283,7 +266,7 @@ W systemie zidentyfikowano następujące przypadki użycia:
 
 ---
 
-## 4.2.2 Tabele scenariuszy przypadków użycia
+## Tabele scenariuszy przypadków użycia
 
 ---
 
@@ -375,11 +358,11 @@ W systemie zidentyfikowano następujące przypadki użycia:
 | Scenariusz główny | 1. Użytkownik otwiera konto <br> 2. System wyświetla dane <br> 3. Użytkownik edytuje dane lub rezerwacje <br> 4. System zapisuje zmiany |
 | Scenariusze alternatywne | A1: Brak uprawnień – komunikat <br> A2: Błąd zapisu – ponowienie operacji |
 
-## 4.2 Diagramy czynności
+## Diagramy czynności
 
-* Rejestracja użytkownika 
+* Rejestracja użytkownika
 * Logowanie do systemu
-* Wyszukiwanie lotów 
+* Wyszukiwanie lotów
 * Rezerwacja lotu
 * Edycja rezerwacji
 * Anulowanie rezerwacji
@@ -393,7 +376,7 @@ W systemie zidentyfikowano następujące przypadki użycia:
 ![Diagram czynności rezerwacje](docs/images/rezerwacja.png)
 **Rys. 3 diagram czynności rezerwacja**
 
-## 4.3 Modele bazy danych
+## Modele bazy danych
 
 ### Model koncepcyjny bazy danych
 
@@ -437,7 +420,7 @@ Tabela może być wykorzystywana jako cache lub źródło danych pomocniczych w 
 ![Model fizyczny bazy danyc](docs/images/relational_1.png)
 **Rys. 5 Model logiczny bazy danych systemu rezerwacji lotów**
 
-## 4.4 Diagramy stanów
+## Diagramy stanów
 
 * Stan rezerwacji
 * Stan płatności
@@ -456,7 +439,7 @@ Tabela może być wykorzystywana jako cache lub źródło danych pomocniczych w 
 ![Diagramy stanu rezerwacji](docs/images/rezerwacja_state.png)
 **Rys. 8 Diagram stanu rezerwacji**
 
-## 4.5 Diagramy sekwencji
+## Diagramy sekwencji
 
 * Rejestracja użytkownika
 * Logowanie do systemu
@@ -474,80 +457,57 @@ Tabela może być wykorzystywana jako cache lub źródło danych pomocniczych w 
 ![Diagram sekwencji wyszukiwania](docs/images/wyszukiwanie_sekwencja.png)
 **Rys. 10 Diagram sekwencji wyszukiwania**
 
-## 5. Dokumentacja bezpieczeństwa systemu
+## Dokumentacja bezpieczeństwa systemu
 
-### 5.1 Bezpieczeństwo danych w bazie
+### Bezpieczeństwo danych w bazie
 * Hasła użytkowników są przechowywane jako hash (bcrypt).
 * Dane w bazie są chronione przez kontrolę dostępu i uprawnienia (RBAC).
 * Dostęp do danych ograniczony jest zasadą least privilege.
 * Dane rezerwacji i pasażerów są powiązane kluczami obcymi, co ogranicza dostęp nieautoryzowany.
 
-### 5.2 Bezpieczeństwo transmisji danych
+### Bezpieczeństwo transmisji danych
 * Komunikacja odbywa się przez HTTPS (TLS).
 * Dane logowania przesyłane są metodą POST.
 * System nie przekazuje danych w URL.
 * Integracje z API zewnętrznymi również korzystają z HTTPS.
 
-### 5.3 Secure by Design
+### Secure by Design
 * walidacja danych wejściowych,
 * ochrona przed SQL Injection (Eloquent ORM),
 * ochrona przed XSS),
 * kontrola dostępu oparta o role (admin/user),
-* separacja logiki w architekturze MVC. 
+* separacja logiki w architekturze MVC.
 
-### 5.4 Privacy by Design
+### Privacy by Design
 * zbierane są tylko niezbędne dane użytkowników,
 * dane pasażerów ograniczone do minimum,
 * brak udostępniania danych podmiotom trzecim poza API,
 * użytkownik ma kontrolę nad swoimi danymi.
 
-### 5.5 Zero Trust
+### Zero Trust
 * każde żądanie jest weryfikowane niezależnie,
 * system nie ufa danym z frontendu,
 * dostęp zależy od ról i uprawnień,
 
-## 6. Rozwiązania zwiększające dostępność (WCAG)
-System w podstawowym zakresie spełnia wymagania WCAG 2.1 na poziomie A, 
+## Rozwiązania zwiększające dostępność (WCAG)
+System w podstawowym zakresie spełnia wymagania WCAG 2.1 na poziomie A,
 z częściowym uwzględnieniem poziomu AA, w szczególności w zakresie czytelności, nawigacji oraz obsługi klawiaturą.
 
 # Dokumentacja deweloperska
 
-## 7. Diagram klas
+## Diagram klas
 ![Diagram klas](docs/images/diagram_klas.png)
 **Rys. 11 Diagram klas**
 
-## 8. Kod SQL
+## Kod SQL
 
 ### Standard SQL do tworzenia modelu bazy danych
 
 Model bazy danych został zaimplementowany przy użyciu migracji frameworka Laravel. Migracje definiują strukturę tabel, klucze główne, klucze obce oraz ograniczenia integralności danych.
 
-Pełny kod SQL modelu bazy danych znajduje się w katalogu `database/migrations` repozytorium projektu.
+Pełny kod SQL modelu bazy danych znajduje się w pliku SQL w repozytorium
+https://github.com/DzikiP/System-rezerwacji-lotow/docs
 
-Repozytorium projektu:
-https://github.com/DzikiP/System-rezerwacji-lotow
-
-Poniżej przedstawiono przykładową definicję tabeli `users`.
-
-```sql
-CREATE TABLE roles (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL
-);
-
-CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    role_id BIGINT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-
-    CONSTRAINT fk_users_role
-        FOREIGN KEY (role_id)
-        REFERENCES roles(id)
-);
-```
 ### Dialekt SQL
 
 Projekt wykorzystuje bazę danych PostgreSQL, dlatego zastosowany został dialekt PostgreSQL SQL.
@@ -774,7 +734,7 @@ public function test_user_bookings_relationship(): void
 ### Wynik testów integracyjnych
 ![wynik testów integracyjnych](docs/images/TestyIntegracyjne.png)
 
-#Dokumentacja techniczna
+# Dokumentacja techniczna
 
 ## Instalacja i konfiguracja:
 
@@ -790,32 +750,32 @@ Takie rozwiązanie zapewnia, że na środowisko produkcyjne trafiają jedynie po
 
 W projekcie zastosowano szereg mechanizmów bezpieczeństwa zgodnych z podejściami Secure by Design, Zero Trust oraz Privacy by Design.
 
-### 1. Bezpieczeństwo danych w tranzycie i spoczynku
+### Bezpieczeństwo danych w tranzycie i spoczynku
 - Cała komunikacja z aplikacją odbywa się przez protokół HTTPS.
 - Dane przesyłane pomiędzy klientem a serwerem są szyfrowane.
 - Hasła użytkowników są przechowywane w formie haszowanej (bcrypt).
 
-### 2. Autoryzacja i uwierzytelnianie
+### Autoryzacja i uwierzytelnianie
 - System wykorzystuje mechanizm logowania oparty o Laravel Authentication.
 - Dostęp do zasobów jest kontrolowany przez role użytkowników (np. administrator, użytkownik).
 - Zastosowano zasadę najmniejszych uprawnień (Least Privilege).
 
-### 3. Ochrona przed atakami
+### Ochrona przed atakami
 - Laravel automatycznie zabezpiecza aplikację przed SQL Injection poprzez ORM Eloquent.
 - Zastosowano ochronę CSRF dla formularzy.
 - Walidacja danych wejściowych odbywa się po stronie serwera.
 
-### 4. Bezpieczeństwo infrastruktury
+### Bezpieczeństwo infrastruktury
 - Środowisko produkcyjne hostowane jest na platformie Railway.
 - Dane konfiguracyjne (np. dostęp do bazy danych) przechowywane są w zmiennych środowiskowych, a nie w kodzie źródłowym.
 - Dostęp do bazy danych jest ograniczony tylko do usług wewnętrznych aplikacji.
 
-### 5. CI/CD i bezpieczeństwo wdrożeń
+### CI/CD i bezpieczeństwo wdrożeń
 - Wdrożenie aplikacji następuje wyłącznie po pomyślnym przejściu testów w GitHub Actions.
 - Każda zmiana w gałęzi `main` przechodzi proces weryfikacji (Continuous Integration).
 - Mechanizm Railway "Wait for CI" blokuje wdrożenie w przypadku błędów testów.
 
-### 6. Ochrona danych użytkownika (Privacy by Design)
+### Ochrona danych użytkownika (Privacy by Design)
 - System minimalizuje zakres przetwarzanych danych osobowych.
 - Dane użytkowników są wykorzystywane wyłącznie w zakresie niezbędnym do realizacji rezerwacji.
 - Brak przechowywania danych kart płatniczych w systemie.
@@ -827,7 +787,7 @@ W projekcie zastosowano szereg mechanizmów bezpieczeństwa zgodnych z podejści
 1. Wprowadzenie
 2. Rejestracja i logowanie
 3. Wyszukiwanie lotów
-4. Proces rezerwacji lotu 
+4. Proces rezerwacji lotu
 5. Zarządzanie rezerwacjami
 6. Płatności
 7. Generowanie biletu PDF
@@ -867,7 +827,7 @@ Wyniki można filtrować oraz sortować według ceny i czasu lotu.
 
 ---
 
-# 4. Proces rezerwacji lotu 
+# 4. Proces rezerwacji lotu
 
 Proces rezerwacji rozpoczyna się po wybraniu konkretnego lotu z listy wyników wyszukiwania.
 
@@ -899,7 +859,7 @@ Użytkownik zatwierdza rezerwację i przechodzi do płatności.
 
 ---
 
-# 5. Zarządzanie rezerwacjami 
+# 5. Zarządzanie rezerwacjami
 
 W panelu użytkownika dostępna jest lista wszystkich rezerwacji.
 
